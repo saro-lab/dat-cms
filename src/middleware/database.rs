@@ -33,14 +33,14 @@ pub async fn bind() -> ApiResult<()> {
         .sqlx_logging(ENV.debug);
 
     DB_POOL.set(Database::connect(opt).await?)
-        .map_err(|e| ApiError::new500(e.to_string()))?;
+        .map_err(|x| ApiError::new500(x.to_string()))?;
     Ok(())
 }
 
 async fn handle_sqlite_specifics(file_path: &str) -> Result<(), DbErr> {
     if let Some(parent) = Path::new(file_path).parent() {
-        fs::create_dir_all(parent).map_err(|e| {
-            DbErr::Custom(format!("Failed to create directory: {}", e))
+        fs::create_dir_all(parent).map_err(|x| {
+            DbErr::Custom(format!("Failed to create directory: {}", x))
         })?;
     }
     let path = Path::new(file_path);

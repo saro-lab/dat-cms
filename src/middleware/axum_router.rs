@@ -34,12 +34,12 @@ pub async fn handle_error(req: Request<Body>, next: Next) -> Response {
     } else {
         if status == StatusCode::NOT_FOUND {
             tracing::info!("404: {}", uri);
-            (StatusCode::BAD_REQUEST, *TEXT_PLAIN, "").into_response()
+            (StatusCode::BAD_REQUEST, *TEXT_PLAIN).into_response()
         } else if status.is_client_error() {
-            (StatusCode::BAD_REQUEST, *TEXT_PLAIN, "").into_response()
+            (StatusCode::BAD_REQUEST, *TEXT_PLAIN).into_response()
         } else {
             tracing::info!("{}: {}", status, uri);
-            (StatusCode::INTERNAL_SERVER_ERROR, *TEXT_PLAIN, "").into_response()
+            (StatusCode::INTERNAL_SERVER_ERROR, *TEXT_PLAIN).into_response()
         }
     }
 }
@@ -48,9 +48,9 @@ pub async fn session_layout(ConnectInfo(socket_addr): ConnectInfo<SocketAddr>, m
     let client_ip = req
         .headers_mut()
         .get("X-Forwarded-For")
-        .and_then(|e| e.to_str().ok())
-        .and_then(|e| e.split(',').next())
-        .and_then(|e| e.trim().parse::<IpAddr>().ok())
+        .and_then(|x| x.to_str().ok())
+        .and_then(|x| x.split(',').next())
+        .and_then(|x| x.trim().parse::<IpAddr>().ok())
         .unwrap_or_else(|| socket_addr.ip());
     req.extensions_mut().insert(client_ip);
     Ok(next.run(req).await)

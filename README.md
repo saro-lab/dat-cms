@@ -8,16 +8,29 @@
 
 ### [Quick Start!! Docker, Kubernetes, Binary](https://dat.saro.me/--/svc/docker-saro-lab-dat-cms)
 
-## support signature algorithm
-| name   | algorithm  |
-|--------|------------|
-| P256   | secp256r1  |
-| P384   | secp384r1  |
-| P521   | secp521r1  |
+### [Support Languages](https://dat.saro.me)
+- Rust -> Crates
+- Kotlin, Java -> Maven
+- TypeScript, JavaScript -> Npm
+- Python -> Pypi
+- C# -> Nuget
+- Ruby -> Gem
+- Go
 
-## support crypto algorithm
-| name       | algorithm                   |
-|------------|-----------------------------|
-| AES128GCMN | aes-128-gcm n(nonce + body) |
-| AES256GCMN | aes-256-cbc n(nonce + body) |
+## Support algorithm
+### Signature algorithm
+| name            | note                  |
+|-----------------|-----------------------|
+| ECDSA-P256      | = secp256r1           |
+| ECDSA-P384      | = secp384r1           |
+| ECDSA-P521      | = secp521r1           |
+| HMAC-SHA256-MFS | = 256Bit Fixed Secret |
+| HMAC-SHA384-MFS | = 384Bit Fixed Secret |
+| HMAC-SHA512-MFS | = 512Bit Fixed Secret |
+- MFS : Maximum(Same Bit) Fixed Secret
 
+### Crypto algorithm
+| name       | note                          |
+|------------|-------------------------------|
+| IV-AES128-GCM | (IV=NONCE:96BIT) + AES128 GCM |
+| IV-AES256-GCM | (IV=NONCE:96BIT) + AES256 GCM |
