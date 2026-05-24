@@ -33,8 +33,8 @@ impl Display for ApiError {
 }
 
 impl From<DatError> for ApiError {
-    fn from(value: DatError) -> Self {
-        tracing::error!("{:?}", value);
+    fn from(error: DatError) -> Self {
+        tracing::error!("{:?}", error);
         ApiError {
             status: StatusCode::INTERNAL_SERVER_ERROR,
             body: "ERR: DAT ERROR".to_string(),

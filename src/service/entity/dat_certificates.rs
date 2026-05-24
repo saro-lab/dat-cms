@@ -1,8 +1,8 @@
 use crate::middleware::error::ApiResult;
 use dat::certificate::DatCertificate;
-use dat::crypto::{DatCryptoAlgorithm, DatCryptoKey};
+use dat::crypto::{DatCrypto, DatCryptoAlgorithm};
 use dat::error::DatError;
-use dat::signature::{DatSignatureAlgorithm, DatSignatureKey};
+use dat::signature::{DatSignature, DatSignatureAlgorithm};
 use sea_orm::entity::prelude::*;
 use sea_orm::prelude::async_trait::async_trait;
 use sea_orm::sea_query::prelude::rust_decimal::prelude::ToPrimitive;
@@ -12,35 +12,33 @@ use serde::{Deserialize, Serialize};
 
 // https://www.sea-ql.org/SeaORM/docs/generate-entity/column-types/
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Deserialize, Serialize)]
-#[sea_orm(table_name = "z_saro_dat_certificate_v3")]
+#[sea_orm(table_name = "z_saro_dat_certificate_v6")]
 pub struct Model {
     #[sea_orm(primary_key)]
     #[sea_orm(column_type = "BigInteger")]
     pub cid: i64,
 
-    #[sea_orm(column_type = "String(StringLen::N(100))")]
-    pub signature_algorithm: String,
-
-    pub signing_key: Vec<u8>,
-
-    pub verifying_key: Vec<u8>,
-
-    #[sea_orm(column_type = "String(StringLen::N(100))")]
-    pub crypto_algorithm: String,
-
-    pub crypto_key: Vec<u8>,
+    #[sea_orm(column_type = "BigInteger")]
+    pub issued_at: i64,
 
     #[sea_orm(column_type = "BigInteger")]
-    pub dat_issue_begin_time: i64,
-
-    #[sea_orm(column_type = "BigInteger")]
-    pub dat_issue_end_time: i64,
+    pub issuance_duration: i64,
 
     #[sea_orm(column_type = "BigInteger")]
     pub dat_ttl: i64,
 
     #[sea_orm(column_type = "BigInteger")]
     pub expire_time: i64,
+
+    #[sea_orm(column_type = "String(StringLen::N(100))")]
+    pub signature_algorithm: String,
+
+    #[sea_orm(column_type = "String(StringLen::N(100))")]
+    pub crypto_algorithm: String,
+
+    pub signature_key: Vec<u8>,
+
+    pub crypto_key: Vec<u8>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -49,35 +47,34 @@ pub enum Relation {}
 impl Model {
     pub fn to_certificate(&self) -> ApiResult<DatCertificate> {
         let signature_algorithm = self.signature_algorithm.parse::<DatSignatureAlgorithm>()?;
-        let signature_key = DatSignatureKey::from_bytes(signature_algorithm, &self.signing_key, &self.verifying_key)?;
+        let signature_key = DatSignature::from_key(signature_algorithm, &self.signature_key)?;
         let crypto_algorithm = self.crypto_algorithm.parse::<DatCryptoAlgorithm>()?;
-        let crypto_key = DatCryptoKey::from_bytes(crypto_algorithm, &self.crypto_key)?;
+        let crypto_key = DatCrypto::from_key(crypto_algorithm, &self.crypto_key)?;
         Ok(DatCertificate::from(
             self.cid.to_u64().unwrap(),
+            self.issued_at as u64,
+            self.issuance_duration as u64,
+            self.dat_ttl as u64,
             signature_key,
             crypto_key,
-            self.dat_issue_begin_time as u64,
-            self.dat_issue_end_time as u64,
-            self.dat_ttl as u64,
         )?)
     }
 }
 
 impl ActiveModel {
-    pub fn generate(signature_algorithm: DatSignatureAlgorithm, crypto_algorithm: DatCryptoAlgorithm, dat_issue_begin: u64, dat_issue_end: u64, dat_ttl: u64) -> Result<Self, DatError> {
-        let (signing_key, verifying_key) = DatSignatureKey::generate(signature_algorithm)?.to_bytes();
-        let crypto_key = DatCryptoKey::generate(crypto_algorithm).to_bytes().to_vec();
+    pub fn generate(issued_at: u64, issuance_duration: u64, dat_ttl: u64, signature_algorithm: DatSignatureAlgorithm, crypto_algorithm: DatCryptoAlgorithm) -> Result<Self, DatError> {
+        let signature_key = DatSignature::generate(signature_algorithm)?.export_key()?;
+        let crypto_key = DatCrypto::generate(crypto_algorithm).export_key().to_vec();
 
         Ok(ActiveModel {
             signature_algorithm: Set(signature_algorithm.to_string()),
-            signing_key: Set(signing_key.to_vec()),
-            verifying_key: Set(verifying_key.to_vec()),
+            signature_key: Set(signature_key),
             crypto_algorithm: Set(crypto_algorithm.to_string()),
             crypto_key: Set(crypto_key),
-            dat_issue_begin_time: Set(dat_issue_begin as i64),
-            dat_issue_end_time: Set(dat_issue_end as i64),
+            issued_at: Set(issued_at as i64),
+            issuance_duration: Set(issuance_duration as i64),
             dat_ttl: Set(dat_ttl as i64),
-            expire_time: Set((dat_issue_end + dat_ttl) as i64),
+            expire_time: Set((issued_at + issuance_duration) as i64),
             ..Default::default()
         })
     }

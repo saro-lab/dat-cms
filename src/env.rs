@@ -31,8 +31,8 @@ pub struct Env {
 
     pub cron: bool,
 
-    pub issue_delay: u64,
-    pub issue_ttl: u64,
+    pub cert_gap: u64,
+    pub issue_dur: u64,
     pub dat_ttl: u64,
 }
 
@@ -46,8 +46,8 @@ fn bind() -> Env {
     println!("hostname: {}", hostname);
     println!("port: {}", port);
 
-    let signature = env_parse("SIGNATURE", DatSignatureAlgorithm::P256);
-    let crypto = env_parse("CRYPTO", DatCryptoAlgorithm::AES128GCMN);
+    let signature = env_parse("SIGNATURE", DatSignatureAlgorithm::HmacSha512Mfs);
+    let crypto = env_parse("CRYPTO", DatCryptoAlgorithm::IvAes256Gcm);
     println!("signature: {}", signature);
     println!("crypto: {}", crypto);
 
@@ -65,28 +65,31 @@ fn bind() -> Env {
 
     let cron = env_str("SINGLE_SERVER", if debug { "CRON" } else { "" }).to_uppercase() == "CRON";
     if cron {
-        if env_has("ISSUE_DELAY") || env_has("ISSUE_TTL") || env_has("DAT_TTL") {
-            panic!("In SINGLE_SERVER mode, you cannot configure ISSUE_DELAY, ISSUE_TTL, or DAT_TTL.");
+        if env_has("CERT_GAP") || env_has("ISSUE_DUR") || env_has("DAT_TTL") {
+            panic!("In SINGLE_SERVER mode, you cannot configure CERT_GAP, ISSUE_DUR, or DAT_TTL.");
         }
         println!("single server mode: CRON (0 0/10 * * * *)");
     }
 
-    let issue_delay = env_parse("ISSUE_DELAY", if debug { 1 } else { 3600 });
-    let issue_ttl = env_parse("ISSUE_TTL", 3600);
+    let cert_gap = env_parse("CERT_GAP", if debug { 1 } else { 3600 });
+    let issue_dur = env_parse("ISSUE_DUR", 3600);
     let dat_ttl = env_parse("DAT_TTL", 1800);
 
-    if issue_delay <= 0 {
+    if cert_gap <= 0 {
         panic!("issue_delay (secs) should be > 0");
-    }
-    if issue_ttl <= 300 {
-        panic!("issue_ttl (secs) should be > 300 (5min)");
     }
     if dat_ttl <= 300 {
         panic!("dat_ttl (secs) should be > 300 (5min)");
     }
+    if issue_dur <= 300 {
+        panic!("issue_dur (secs) should be > 300 (5min)");
+    }
+    if issue_dur < (dat_ttl * 2) {
+        panic!("issue_dur (secs) should be > dat_ttl * 2 (10min)");
+    }
 
-    println!("issue_delay: {} secs", issue_delay);
-    println!("issue_ttl: {} secs", issue_ttl);
+    println!("cert_gap: {} secs", cert_gap);
+    println!("issue_dur: {} secs", issue_dur);
     println!("dat_ttl: {} secs", dat_ttl);
 
     Env {
@@ -101,18 +104,15 @@ fn bind() -> Env {
         log_file,
         log_json,
         cron,
-        issue_delay,
-        issue_ttl,
+        cert_gap,
+        issue_dur,
         dat_ttl,
     }
 }
 
 impl Env {
-    pub fn issue_begin(&self) -> u64 {
-        now_unix_timestamp() + self.issue_delay
-    }
-    pub fn issue_end(&self) -> u64 {
-        now_unix_timestamp() + self.issue_delay + self.issue_ttl
+    pub fn issued_at(&self) -> u64 {
+        now_unix_timestamp() + self.cert_gap
     }
 }
 
