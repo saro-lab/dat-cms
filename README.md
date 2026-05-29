@@ -35,3 +35,30 @@
 | IV-AES128-GCM | (IV=NONCE:96BIT) + AES128 GCM |
 | IV-AES256-GCM | (IV=NONCE:96BIT) + AES256 GCM |
 
+
+## Build
+- Linux amd64
+```shell
+./build/linux_amd64.sh
+```
+- Linux arm64
+```shell
+./build/linux_arm64.sh
+```
+- Mac amd64,
+```shell
+./build/mac_amd64.sh
+```
+- Mac arm64,
+```shell
+./build/mac_arm64.sh
+```
+- Windows amd64,
+```shell
+./build/win_amd64.ps1
+```
+- Windows arm64,
+```shell
+./build/win_arm64.ps1
+```
+
