@@ -1,9 +1,12 @@
-use dat::crypto::DatCryptoAlgorithm;
-use dat::signature::DatSignatureAlgorithm;
-use dat::util::now_unix_timestamp;
 use std::env;
+use std::fmt::format;
 use std::str::FromStr;
 use std::sync::LazyLock;
+use dat::crypto::DatCryptoAlgorithm;
+use dat::signature::DatSignatureAlgorithm;
+use sea_orm::Iden;
+use tokio_cron_scheduler::Job;
+use crate::service::entity::dat_cert::Column::SignatureAlgorithm;
 
 pub static ENV: LazyLock<Env> = LazyLock::new(|| bind());
 
@@ -39,11 +42,6 @@ fn bind() -> Env {
     println!("hostname: {}", hostname);
     println!("port: {}", port);
 
-    let signature = env_parse("SIGNATURE", DatSignatureAlgorithm::HmacSha512Mfs);
-    let crypto = env_parse("CRYPTO", DatCryptoAlgorithm::IvAes256Gcm);
-    println!("signature: {}", signature);
-    println!("crypto: {}", crypto);
-
     let db_uri = env_str("DB_URI", "sqlite:./data/data.db");
     println!("db_uri: {}", db_uri);
 
@@ -56,56 +54,52 @@ fn bind() -> Env {
     println!("log console: {}", if log_console { "on" } else { "off" });
     println!("log file: {}", if log_file { if log_json { "json" } else { "text" } } else { "off" });
 
-    let cron = env_str("SINGLE_SERVER", if debug { "CRON" } else { "" }).to_uppercase() == "CRON";
-    if cron {
-        if env_has("CERT_GAP") || env_has("ISSUE_DUR") || env_has("DAT_TTL") {
-            panic!("In SINGLE_SERVER mode, you cannot configure CERT_GAP, ISSUE_DUR, or DAT_TTL.");
+    let mut cron_expr = "".to_string();
+    let mut cron_post = "".to_string();
+    let cron = env_str("SINGLE_SERVER", if debug { "HMAC-SHA512-MFS,IV-AES256-GCM" } else { "" });
+    if !cron.is_empty() {
+        let arg_example = "
+# Example: SINGLE_SERVER=Options
+
+Just Algorithm:
+signature_algorithm, crypto_algorithm
+ex) HMAC-SHA512-MFS, IV-AES256-GCM
+
+Detailed:
+signature_algorithm, crypto_algorithm, cron, certificate_propagation_delay_seconds, dat_issuance_duration_seconds, dat_ttl_seconds
+ex) HMAC-SHA512-MFS, IV-AES256-GCM, 0 0/30 * * * *, 1200, 10800, 600
+".trim();
+        let mut parts = cron.split(',').map(|x| x.trim()).collect::<Vec<&str>>();
+        if parts.len() == 2 {
+            parts.push("0 0/30 * * * *");
+            parts.push("1200");
+            parts.push("10800");
+            parts.push("600");
         }
-        println!("single server mode: CRON (0 0/10 * * * *)");
+        if parts.len() != 6 {
+            panic!("invalid SINGLE_SERVER argument: {cron}\n{}", arg_example);
+        }
+        DatSignatureAlgorithm::from_str(parts[0]).expect(format!("invalid signature algorithm\n{arg_example}").as_str());
+        DatCryptoAlgorithm::from_str(parts[1]).expect(format!("invalid crypto algorithm\n{arg_example}").as_str());
+        Job::schedule_to_cron(parts[2]).expect(format!("invalid cron expression\n{arg_example}").as_str());
+        parts[3].parse::<u64>().expect(format!("invalid certificate propagation delay seconds\n{arg_example}").as_str());
+        parts[4].parse::<u64>().expect(format!("invalid dat issuance duration seconds\n{arg_example}").as_str());
+        parts[5].parse::<u64>().expect(format!("invalid dat ttl seconds\n{arg_example}").as_str());
+        cron_expr = parts[2].to_string();
+        cron_post = format!("{} {} {} {}", parts[3], parts[4], parts[5], parts[6]);
     }
-
-    let cert_gap = env_parse("CERT_GAP", if debug { 1 } else { 3600 });
-    let issue_dur = env_parse("ISSUE_DUR", 3600);
-    let dat_ttl = env_parse("DAT_TTL", 1800);
-
-    if cert_gap <= 0 {
-        panic!("issue_delay (secs) should be > 0");
-    }
-    if dat_ttl <= 300 {
-        panic!("dat_ttl (secs) should be > 300 (5min)");
-    }
-    if issue_dur <= 300 {
-        panic!("issue_dur (secs) should be > 300 (5min)");
-    }
-    if issue_dur < (dat_ttl * 2) {
-        panic!("issue_dur (secs) should be > dat_ttl * 2 (10min)");
-    }
-
-    println!("cert_gap: {} secs", cert_gap);
-    println!("issue_dur: {} secs", issue_dur);
-    println!("dat_ttl: {} secs", dat_ttl);
 
     Env {
         version,
         hostname,
         port,
-        signature,
-        crypto,
         db_uri,
         debug,
         log_console,
         log_file,
         log_json,
-        cron,
-        cert_gap,
-        issue_dur,
-        dat_ttl,
-    }
-}
-
-impl Env {
-    pub fn issued_at(&self) -> u64 {
-        now_unix_timestamp() + self.cert_gap
+        cron_expr,
+        cron_post,
     }
 }
 
