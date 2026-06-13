@@ -1,6 +1,6 @@
 [package]
 name = "dat-cms"
-version = "4.0.2"
+version = "4.1.0"
 edition = "2024"
 
 [profile.release]
@@ -19,8 +19,11 @@ tracing = { version = "0.1.44" }
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json", "time"] }
 tracing-appender = { version = "0.2.5" }
 sea-orm = { version = "2.0.0-rc.38", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-rustls", "macros"]}
+rand = { version = "0.10.1" }
+regex = { version = "1.12.4" }
 
-dat = { version = "4.0.2" }
+dat = { path = "../dat-rust" }
+#dat = { version = "4.0.2" }
 
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]

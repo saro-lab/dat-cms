@@ -1,15 +1,18 @@
-use crate::entity::dat_certificates;
+use crate::entity::dat_cert;
 use crate::env::ENV;
-use crate::middleware::error::ApiResult;
+use crate::middleware::error::{ApiError, ApiResult};
 use dat::util::now_unix_timestamp;
-use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter};
+use rand::random;
+use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, SelectExt};
 
 pub(crate) type CertificateCount = usize;
 pub(crate) type NewCid = i64;
 pub(crate) type DeleteCount = u64;
 
 pub async fn get_certificates<C: ConnectionTrait>(verify_only: bool, db: &C) -> ApiResult<(String, CertificateCount)> {
-    let certificates = dat_certificates::Entity::find().all(db).await?
+    let now = now_unix_timestamp();
+    let certificates = dat_cert::Entity::find()
+        .filter(dat_cert::Column::ExpireTime.gte(now)).all(db).await?
         .iter()
         .map(|x|
             x.to_certificate()
@@ -35,12 +38,26 @@ pub async fn get_certificates<C: ConnectionTrait>(verify_only: bool, db: &C) -> 
 
 pub async fn generate<C: ConnectionTrait>(db: &C) -> ApiResult<(NewCid, DeleteCount)> {
     let delete_count = cleanup_expired(db).await?;
-    let cid = dat_certificates::ActiveModel::generate(ENV.issued_at(), ENV.issue_dur, ENV.dat_ttl, ENV.signature, ENV.crypto)?
+    let cid = generate_cid(db).await?;
+    let cid = dat_cert::ActiveModel::generate(cid, ENV.issued_at(), ENV.issue_dur, ENV.dat_ttl, ENV.signature, ENV.crypto)?
         .save(db).await?.cid.unwrap();
     Ok((cid, delete_count))
 }
 
 async fn cleanup_expired<C: ConnectionTrait>(db: &C) -> ApiResult<u64> {
-    let now = now_unix_timestamp();
-    Ok(dat_certificates::Entity::delete_many().filter(dat_certificates::Column::ExpireTime.lt(now)).exec(db).await?.rows_affected)
+    let clean_date = now_unix_timestamp() - (86400 * 30);
+    Ok(dat_cert::Entity::delete_many().filter(dat_cert::Column::ExpireTime.lt(clean_date)).exec(db).await?.rows_affected)
+}
+
+async fn generate_cid<C: ConnectionTrait>(db: &C) -> ApiResult<i64> {
+    for i in 0 .. 1000 {
+        let cid = random::<u32>() as i64;
+        let exists = dat_cert::Entity::find()
+            .filter(dat_cert::Column::Cid.eq(cid))
+            .exists(db).await?;
+        if !exists {
+            return Ok(cid);
+        }
+    }
+    Err(ApiError::new500("".to_string()))
 }

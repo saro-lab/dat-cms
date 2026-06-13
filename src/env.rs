@@ -14,10 +14,6 @@ pub struct Env {
     pub hostname: String,
     pub port: u16,
 
-    // algorithm
-    pub signature: DatSignatureAlgorithm,
-    pub crypto: DatCryptoAlgorithm,
-
     // db
     pub db_uri: String,
 
@@ -29,11 +25,8 @@ pub struct Env {
     pub log_file: bool,
     pub log_json: bool,
 
-    pub cron: bool,
-
-    pub cert_gap: u64,
-    pub issue_dur: u64,
-    pub dat_ttl: u64,
+    pub cron_expr: String,
+    pub cron_post: String,
 }
 
 fn bind() -> Env {
