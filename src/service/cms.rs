@@ -4,7 +4,7 @@ use dat::crypto::DatCryptoAlgorithm;
 use dat::signature::DatSignatureAlgorithm;
 use dat::util::now_unix_timestamp;
 use rand::random;
-use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, SelectExt};
+use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, QuerySelect, SelectExt};
 use std::str::FromStr;
 
 pub(crate) type CertificateCount = usize;
@@ -14,7 +14,9 @@ pub(crate) type DeleteCount = u64;
 pub async fn get_certificates<C: ConnectionTrait>(verify_only: bool, db: &C) -> ApiResult<(String, CertificateCount)> {
     let now = now_unix_timestamp();
     let certificates = dat_cert::Entity::find()
-        .filter(dat_cert::Column::ExpireTime.gte(now)).all(db).await?
+        .filter(dat_cert::Column::ExpireTime.gte(now))
+        .order_by_id_asc()
+        .all(db).await?
         .iter()
         .map(|x|
             x.to_certificate()
@@ -29,6 +31,7 @@ pub async fn get_certificates<C: ConnectionTrait>(verify_only: bool, db: &C) -> 
         .filter(|x| !x.is_empty())
         .collect::<Vec<String>>();
     let count = certificates.len();
+    certificates.last().map(|x| println!("{}", x));
     Ok((certificates.join("\n"), count))
 }
 

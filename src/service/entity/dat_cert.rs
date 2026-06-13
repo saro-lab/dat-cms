@@ -11,11 +11,11 @@ use serde::{Deserialize, Serialize};
 
 // https://www.sea-ql.org/SeaORM/docs/generate-entity/column-types/
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Deserialize, Serialize)]
-#[sea_orm(table_name = "z_saro_dat_cms_cert_v2")]
+#[sea_orm(table_name = "z_saro_dat_cms_cert_v3")]
 pub struct Model {
     #[sea_orm(primary_key)]
     #[sea_orm(column_type = "BigInteger")]
-    pub seq: i64,
+    pub ver: i64,
 
     #[sea_orm(unique)]
     #[sea_orm(column_type = "BigInteger")]
