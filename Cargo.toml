@@ -22,8 +22,7 @@ sea-orm = { version = "2.0.0-rc.38", features = ["sqlx-all", "with-ipnetwork", "
 rand = { version = "0.10.1" }
 regex = { version = "1.12.4" }
 
-dat = { path = "../dat-rust" }
-#dat = { version = "4.0.2" }
+dat = { version = "4.1.0" }
 
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]

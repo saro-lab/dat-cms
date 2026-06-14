@@ -2,18 +2,25 @@ use crate::env::ENV;
 use crate::middleware::database::db_pool;
 use crate::middleware::error::ApiResult;
 use crate::service::cms;
+use axum::extract::{Path, Query};
 use axum::routing::{get, post};
 use axum::{Extension, Router};
+use serde::Deserialize;
 use std::net::IpAddr;
-use axum::extract::Path;
 
 pub static API_VERSION: &str = "v1";
+
+#[derive(Deserialize)]
+pub struct GetCertsQuery {
+    ver: Option<i64>,
+}
+
 
 pub async fn router() -> Router {
     Router::new()
         .route(format!("/{API_VERSION}/cert/{{signature_algorithm}}/{{crypto_algorithm}}/{{certificate_propagation_delay_seconds}}/{{dat_issuance_duration_seconds}}/{{dat_ttl_seconds}}").as_str(), post(generate_key))
-        .route(format!("/{API_VERSION}/certs").as_str(), post(generate_key))
-        .route(format!("/{API_VERSION}/certs/verifying").as_str(), post(generate_key))
+        .route(format!("/{API_VERSION}/certs").as_str(), get(certificate_list))
+        .route(format!("/{API_VERSION}/certs/verifying").as_str(), get(verifying_only_certificate_list))
         .route("/health", get(health))
         .route("/version", get(version))
         .route("/version/api", get(version_api))
@@ -45,14 +52,16 @@ pub async fn generate_key(
     Ok("OK".to_string())
 }
 
-pub async fn certificate_list(Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
-    let (body, certificate_count) = cms::get_certificates(false, db_pool()).await?;
+pub async fn certificate_list(Query(query): Query<GetCertsQuery>, Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
+    let ver = query.ver.unwrap_or(0);
+    let (body, certificate_count) = cms::get_certificates(ver, false, db_pool()).await?;
     tracing::info!("{ip_addr} GET {certificate_count} CERTIFICATES");
     Ok(body)
 }
 
-pub async fn verifying_only_certificate_list(Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
-    let (body, certificate_count) = cms::get_certificates(true, db_pool()).await?;
+pub async fn verifying_only_certificate_list(Query(query): Query<GetCertsQuery>, Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
+    let ver = query.ver.unwrap_or(0);
+    let (body, certificate_count) = cms::get_certificates(ver, true, db_pool()).await?;
     tracing::info!("{ip_addr} GET {certificate_count} VERIFYING CERTIFICATES");
     Ok(body)
 }

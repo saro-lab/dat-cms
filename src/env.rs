@@ -3,7 +3,6 @@ use dat::signature::DatSignatureAlgorithm;
 use std::env;
 use std::str::FromStr;
 use std::sync::LazyLock;
-use sea_orm::sea_query::prelude::rust_decimal::prelude::ToPrimitive;
 use tokio_cron_scheduler::Job;
 
 pub static ENV: LazyLock<Env> = LazyLock::new(|| bind());
@@ -119,10 +118,6 @@ fn env_str(key: &str, default_value: &str) -> String {
     } else {
         default_value.to_string()
     }
-}
-
-fn env_has(key: &str) -> bool {
-    env::var(key).is_ok()
 }
 
 fn env_parse<F: FromStr>(key: &str, default_value: F) -> F

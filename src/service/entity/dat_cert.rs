@@ -79,7 +79,7 @@ impl ActiveModel {
             issued_at: Set(issued_at),
             issuance_duration: Set(issuance_duration),
             dat_ttl: Set(dat_ttl),
-            expire_time: Set((issued_at + issuance_duration)),
+            expire_time: Set(issued_at + issuance_duration),
             ..Default::default()
         })
     }

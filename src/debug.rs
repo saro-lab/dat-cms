@@ -49,7 +49,7 @@ async fn parse(Path(dat): Path<String>) -> ApiResult<String> {
 
 async fn manager() -> ApiResult<DatManager> {
     let manager: DatManager = DatManager::new();
-    let (body, _) = cms::get_certificates(false, db_pool()).await?;
+    let (body, _) = cms::get_certificates(0, false, db_pool()).await?;
     manager.import(&body, true)?;
     Ok(manager)
 }

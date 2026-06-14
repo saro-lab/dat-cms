@@ -4,43 +4,47 @@ use dat::crypto::DatCryptoAlgorithm;
 use dat::signature::DatSignatureAlgorithm;
 use dat::util::now_unix_timestamp;
 use rand::random;
-use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, QuerySelect, SelectExt};
+use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, SelectExt};
 use std::str::FromStr;
+use dat::certificate::DatCertificate;
+use dat::error::DatError;
 
 pub(crate) type CertificateCount = usize;
 pub(crate) type NewCid = i64;
 pub(crate) type DeleteCount = u64;
 
-pub async fn get_certificates<C: ConnectionTrait>(verify_only: bool, db: &C) -> ApiResult<(String, CertificateCount)> {
-    let now = now_unix_timestamp();
-    let certificates = dat_cert::Entity::find()
-        .filter(dat_cert::Column::ExpireTime.gte(now))
-        .order_by_id_asc()
-        .all(db).await?
-        .iter()
-        .map(|x|
-            x.to_certificate()
-                .unwrap()
-                .export(verify_only)
-                .unwrap_or_else(|_| {
-                    let export_option = if verify_only { "Export Verify Only" } else { "Export" };
-                    tracing::warn!("{} {} {} {} Failed to convert the certificate", export_option, x.cid, x.signature_algorithm, x.crypto_algorithm);
-                    "".to_string()
-                })
-        )
-        .filter(|x| !x.is_empty())
-        .collect::<Vec<String>>();
-    let count = certificates.len();
-    certificates.last().map(|x| println!("{}", x));
-    Ok((certificates.join("\n"), count))
+pub async fn get_certificates<C: ConnectionTrait>(version: i64, verify_only: bool, db: &C) -> ApiResult<(String, CertificateCount)> {
+    let vec = get_all_certificates(db).await?;
+    let ver = vec.last().map(|x| x.ver).unwrap_or(0).to_string();
+    if ver == "0" {
+        return Ok((ver, 0))
+    }
+
+    let mut result: Vec<String> = Vec::new();
+    result.push(ver);
+
+    get_all_certificates(db)
+        .await?.iter()
+        .filter(|x| x.ver > version)
+        .map(|x| x.to_certificate())
+        .collect::<ApiResult<Vec<DatCertificate>>>()?
+        .iter().filter(|x| x.signable() || !verify_only)
+        .map(|x| x.export(verify_only))
+        .collect::<Result<Vec<String>, DatError>>()?
+        .iter().for_each(|x| result.push(x.clone()));
+
+    let count = result.len() - 1;
+
+    Ok((result.join("\n"), count))
 }
 
-pub async fn get_certificate<C: ConnectionTrait>(cid: i64, db: &C) -> ApiResult<Vec<dat_cert::Model>> {
+pub async fn get_all_certificates<C: ConnectionTrait>(db: &C) -> ApiResult<Vec<dat_cert::Model>> {
     let now = now_unix_timestamp();
-    dat_cert::Entity::find()
+    let vec = dat_cert::Entity::find()
         .filter(dat_cert::Column::ExpireTime.gte(now))
         .order_by_id_asc()
-        .all(db).await
+        .all(db).await?;
+    Ok(vec)
 }
 
 pub async fn generate<C: ConnectionTrait>(
@@ -72,7 +76,7 @@ async fn cleanup_expired<C: ConnectionTrait>(db: &C) -> ApiResult<u64> {
 }
 
 async fn generate_cid<C: ConnectionTrait>(db: &C) -> ApiResult<i64> {
-    for i in 0 .. 1000 {
+    for _ in 0 .. 1000 {
         let cid = random::<u32>() as i64;
         let exists = dat_cert::Entity::find()
             .filter(dat_cert::Column::Cid.eq(cid))
