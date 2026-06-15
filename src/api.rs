@@ -10,17 +10,11 @@ use std::net::IpAddr;
 
 pub static API_VERSION: &str = "v1";
 
-#[derive(Deserialize)]
-pub struct GetCertsQuery {
-    ver: Option<i64>,
-}
-
-
 pub async fn router() -> Router {
     Router::new()
-        .route(format!("/{API_VERSION}/cert/{{signature_algorithm}}/{{crypto_algorithm}}/{{certificate_propagation_delay_seconds}}/{{dat_issuance_duration_seconds}}/{{dat_ttl_seconds}}").as_str(), post(generate_key))
-        .route(format!("/{API_VERSION}/certs").as_str(), get(certificate_list))
-        .route(format!("/{API_VERSION}/certs/verifying").as_str(), get(verifying_only_certificate_list))
+        .route(format!("/{API_VERSION}/cert/{{signature_algorithm}}/{{crypto_algorithm}}/{{certificate_propagation_delay_seconds}}/{{dat_issuance_duration_seconds}}/{{dat_ttl_seconds}}").as_str(), post(generate_certificate))
+        .route(format!("/{API_VERSION}/cert/list/{{version}}").as_str(), get(get_certificate_list))
+        .route(format!("/{API_VERSION}/cert/list/{{version}}/verify-only").as_str(), get(get_certificate_list))
         .route("/health", get(health))
         .route("/version", get(version))
         .route("/version/api", get(version_api))
@@ -30,7 +24,7 @@ async fn health() -> &'static str { "OK" }
 async fn version() -> &'static str { &ENV.version }
 async fn version_api() -> &'static str { API_VERSION }
 
-pub async fn generate_key(
+pub async fn generate_certificate(
     Path((
         signature_algorithm,
         crypto_algorithm,
@@ -52,16 +46,8 @@ pub async fn generate_key(
     Ok("OK".to_string())
 }
 
-pub async fn certificate_list(Query(query): Query<GetCertsQuery>, Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
-    let ver = query.ver.unwrap_or(0);
-    let (body, certificate_count) = cms::get_certificates(ver, false, db_pool()).await?;
-    tracing::info!("{ip_addr} GET {certificate_count} CERTIFICATES");
-    Ok(body)
-}
-
-pub async fn verifying_only_certificate_list(Query(query): Query<GetCertsQuery>, Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
-    let ver = query.ver.unwrap_or(0);
-    let (body, certificate_count) = cms::get_certificates(ver, true, db_pool()).await?;
-    tracing::info!("{ip_addr} GET {certificate_count} VERIFYING CERTIFICATES");
+pub async fn get_certificate_list(Path(version): Path<i64>, Extension(ip_addr): Extension<IpAddr>) -> ApiResult<String> {
+    let certs = cms::certificates(version, false, db_pool()).await?;
+    tracing::info!("{ip_addr} GET {} CERTIFICATES", certs.size());
     Ok(body)
 }

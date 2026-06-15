@@ -1,51 +1,101 @@
-use crate::entity::dat_cert;
+use crate::entity::dat_cms_cert;
 use crate::middleware::error::{ApiError, ApiResult};
+use dat::certificate::DatCertificate;
 use dat::crypto::DatCryptoAlgorithm;
+use dat::error::DatError;
 use dat::signature::DatSignatureAlgorithm;
 use dat::util::now_unix_timestamp;
 use rand::random;
 use sea_orm::{ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, SelectExt};
 use std::str::FromStr;
-use dat::certificate::DatCertificate;
-use dat::error::DatError;
+use std::sync::atomic::{AtomicI64, AtomicU64, Ordering};
+use std::sync::OnceLock;
+use tokio::sync::RwLock;
 
-pub(crate) type CertificateCount = usize;
-pub(crate) type NewCid = i64;
-pub(crate) type DeleteCount = u64;
+// cache time = 60 secs
+const CACHE_TIME: u64 = 60;
 
-pub async fn get_certificates<C: ConnectionTrait>(version: i64, verify_only: bool, db: &C) -> ApiResult<(String, CertificateCount)> {
-    let vec = get_all_certificates(db).await?;
-    let ver = vec.last().map(|x| x.ver).unwrap_or(0).to_string();
-    if ver == "0" {
-        return Ok((ver, 0))
+pub(crate) type LastCertificateVersion = i64;
+static CACHE_EXPIRE: OnceLock<AtomicU64> = OnceLock::new();
+static CACHE_VERSION: OnceLock<AtomicI64> = OnceLock::new();
+static CACHE_CERTIFICATES: OnceLock<RwLock<Vec<SerializedCertificate>>> = OnceLock::new();
+
+#[derive(Debug, Clone)]
+pub struct SerializedCertificate {
+    pub(crate) version: i64,
+    pub(crate) full: String,
+    pub(crate) verify_only: String,
+}
+
+pub struct Certificates {
+    version: i64,
+    list: Vec<String>
+}
+
+impl Certificates {
+    pub fn size(&self) -> usize {
+        self.list.len()
     }
 
-    let mut result: Vec<String> = Vec::new();
-    result.push(ver);
+    pub fn export(&self, prefix_version: bool) -> String {
+        let mut result = String::new();
 
-    get_all_certificates(db)
-        .await?.iter()
-        .filter(|x| x.ver > version)
-        .map(|x| x.to_certificate())
-        .collect::<ApiResult<Vec<DatCertificate>>>()?
-        .iter().filter(|x| x.signable() || !verify_only)
-        .map(|x| x.export(verify_only))
-        .collect::<Result<Vec<String>, DatError>>()?
-        .iter().for_each(|x| result.push(x.clone()));
+        if prefix_version {
+            result.push_str(self.version.to_string().as_str());
+            result.push('\n');
+        }
 
-    let count = result.len() - 1;
-
-    Ok((result.join("\n"), count))
+        for node in &self.list {
+            result.push('\n');
+            result.push_str(node);
+        }
+        result
+    }
 }
 
-pub async fn get_all_certificates<C: ConnectionTrait>(db: &C) -> ApiResult<Vec<dat_cert::Model>> {
+pub fn bind() {
+    CACHE_EXPIRE.set(AtomicU64::new(0)).expect("service::cms::bind() OnceLock Error");
+    CACHE_VERSION.set(AtomicI64::new(0)).expect("service::cms::bind() OnceLock Error");
+    CACHE_CERTIFICATES.set(RwLock::new(Vec::new())).expect("service::cms::bind() OnceLock Error");
+}
+pub async fn certificates<C: ConnectionTrait>(version: i64, verify_only: bool, db: &C) -> ApiResult<Certificates> {
     let now = now_unix_timestamp();
-    let vec = dat_cert::Entity::find()
-        .filter(dat_cert::Column::ExpireTime.gte(now))
-        .order_by_id_asc()
-        .all(db).await?;
-    Ok(vec)
+    let certificates = CACHE_CERTIFICATES.get().unwrap();
+    let cache_expire = CACHE_EXPIRE.get().unwrap();
+    let cache_version = CACHE_VERSION.get().unwrap();
+
+    if cache_expire.load(Ordering::Acquire) < now {
+        let mut certs_write = certificates.write().await;
+        if cache_expire.load(Ordering::Acquire) < now {
+            let new_certs = dat_cms_cert::Entity::find()
+                .filter(dat_cms_cert::Column::Expire.gte(now))
+                .order_by_id_asc()
+                .all(db).await?
+                .iter()
+                .map(|x| x.serialize_certificate())
+                .collect::<ApiResult<Vec<SerializedCertificate>>>()?;
+
+            let new_cache_version = new_certs.last().map(|x| x.version).unwrap_or(0);
+            *certs_write = new_certs;
+            cache_version.store(new_cache_version, Ordering::Release);
+
+            cache_expire.store(now + CACHE_TIME, Ordering::Release);
+        }
+    }
+
+    let list = certificates.read().await.iter()
+        .filter(|x| x.version > version)
+        .map(|x| if verify_only { x.verify_only.clone() } else { x.full.clone() })
+        .collect::<Vec<String>>();
+
+    Ok(Certificates {
+        version: CACHE_VERSION.get().unwrap().load(Ordering::Relaxed),
+        list
+    })
 }
+
+
+
 
 pub async fn generate<C: ConnectionTrait>(
     signature: String,
@@ -58,7 +108,7 @@ pub async fn generate<C: ConnectionTrait>(
     let now = now_unix_timestamp() as i64;
     let delete_count = cleanup_expired(db).await?;
     let cid = generate_cid(db).await?;
-    let cid = dat_cert::ActiveModel::generate(
+    let cid = dat_cms_cert::ActiveModel::generate(
         cid,
         now + cron_certificate_propagation_delay_seconds,
         cron_dat_issuance_duration_seconds,
@@ -72,14 +122,14 @@ pub async fn generate<C: ConnectionTrait>(
 
 async fn cleanup_expired<C: ConnectionTrait>(db: &C) -> ApiResult<u64> {
     let clean_date = now_unix_timestamp() - (86400 * 30);
-    Ok(dat_cert::Entity::delete_many().filter(dat_cert::Column::ExpireTime.lt(clean_date)).exec(db).await?.rows_affected)
+    Ok(dat_cms_cert::Entity::delete_many().filter(dat_cms_cert::Column::ExpireTime.lt(clean_date)).exec(db).await?.rows_affected)
 }
 
 async fn generate_cid<C: ConnectionTrait>(db: &C) -> ApiResult<i64> {
     for _ in 0 .. 1000 {
         let cid = random::<u32>() as i64;
-        let exists = dat_cert::Entity::find()
-            .filter(dat_cert::Column::Cid.eq(cid))
+        let exists = dat_cms_cert::Entity::find()
+            .filter(dat_cms_cert::Column::Cid.eq(cid))
             .exists(db).await?;
         if !exists {
             return Ok(cid);

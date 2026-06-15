@@ -22,6 +22,7 @@ async fn main() {
     logging::bind();
     database::bind().await.unwrap();
     entity::create_all_table(db_pool()).await.unwrap();
+    service::cms::bind();
     cron::bind().await.unwrap();
 
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", ENV.port)).await.unwrap();

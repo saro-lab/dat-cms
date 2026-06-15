@@ -1,4 +1,5 @@
 use crate::middleware::error::ApiResult;
+use crate::service::cms::SerializedCertificate;
 use dat::certificate::DatCertificate;
 use dat::crypto::{DatCrypto, DatCryptoAlgorithm};
 use dat::error::DatError;
@@ -11,7 +12,7 @@ use serde::{Deserialize, Serialize};
 
 // https://www.sea-ql.org/SeaORM/docs/generate-entity/column-types/
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Deserialize, Serialize)]
-#[sea_orm(table_name = "z_saro_dat_cms_cert_v3")]
+#[sea_orm(table_name = "z_saro_dat_cms_cert_v4")]
 pub struct Model {
     #[sea_orm(primary_key)]
     #[sea_orm(column_type = "BigInteger")]
@@ -22,7 +23,7 @@ pub struct Model {
     pub cid: i64,
 
     #[sea_orm(column_type = "BigInteger")]
-    pub issued_at: i64,
+    pub issuance_start: i64,
 
     #[sea_orm(column_type = "BigInteger")]
     pub issuance_duration: i64,
@@ -32,7 +33,7 @@ pub struct Model {
 
     #[sea_orm(indexed)]
     #[sea_orm(column_type = "BigInteger")]
-    pub expire_time: i64,
+    pub expire: i64,
 
     #[sea_orm(column_type = "String(StringLen::N(100))")]
     pub signature_algorithm: String,
@@ -49,24 +50,29 @@ pub struct Model {
 pub enum Relation {}
 
 impl Model {
-    pub fn to_certificate(&self) -> ApiResult<DatCertificate> {
+    pub fn serialize_certificate(&self) -> ApiResult<SerializedCertificate> {
         let signature_algorithm = self.signature_algorithm.parse::<DatSignatureAlgorithm>()?;
         let signature_key = DatSignature::from_key(signature_algorithm, &self.signature_key)?;
         let crypto_algorithm = self.crypto_algorithm.parse::<DatCryptoAlgorithm>()?;
         let crypto_key = DatCrypto::from_key(crypto_algorithm, &self.crypto_key)?;
-        Ok(DatCertificate::from(
+        let certificate = DatCertificate::from(
             self.cid as u64,
-            self.issued_at as u64,
+            self.issuance_start as u64,
             self.issuance_duration as u64,
             self.dat_ttl as u64,
             signature_key,
             crypto_key,
-        )?)
+        )?;
+        Ok(SerializedCertificate {
+            version: self.ver,
+            full: certificate.export(false)?,
+            verify_only: certificate.export(true)?
+        })
     }
 }
 
 impl ActiveModel {
-    pub fn generate(cid: i64, issued_at: i64, issuance_duration: i64, dat_ttl: i64, signature_algorithm: DatSignatureAlgorithm, crypto_algorithm: DatCryptoAlgorithm) -> Result<Self, DatError> {
+    pub fn generate(cid: i64, issuance_start: i64, issuance_duration: i64, dat_ttl: i64, signature_algorithm: DatSignatureAlgorithm, crypto_algorithm: DatCryptoAlgorithm) -> Result<Self, DatError> {
         let signature_key = DatSignature::generate(signature_algorithm)?.export_key()?;
         let crypto_key = DatCrypto::generate(crypto_algorithm).export_key().to_vec();
 
@@ -76,10 +82,10 @@ impl ActiveModel {
             signature_key: Set(signature_key),
             crypto_algorithm: Set(crypto_algorithm.to_string()),
             crypto_key: Set(crypto_key),
-            issued_at: Set(issued_at),
+            issuance_start: Set(issuance_start),
             issuance_duration: Set(issuance_duration),
             dat_ttl: Set(dat_ttl),
-            expire_time: Set(issued_at + issuance_duration),
+            expire: Set(issuance_start + issuance_duration),
             ..Default::default()
         })
     }

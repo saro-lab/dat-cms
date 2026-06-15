@@ -44,3 +44,17 @@ podman machine stop
 podman machine set --memory 8000
 podman machine start
 ```
+
+
+
+## Configuration - build
+```
+# cross install
+cargo install cross --git https://github.com/cross-rs/cross
+
+# linux, mac
+export CROSS_CONTAINER_ENGINE=podman
+
+# windows ps
+$env:CROSS_CONTAINER_ENGINE="podman"
+```
