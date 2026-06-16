@@ -21,9 +21,10 @@ tracing-appender = { version = "0.2.5" }
 sea-orm = { version = "2.0.0-rc.40", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-rustls", "macros"]}
 rand = { version = "0.10.1" }
 regex = { version = "1.12.4" }
+anyhow = { version = "1.0.102" }
+thiserror = { version = "2.0.18" }
 
-# dat = { version = "4.1.0" }
-dat = { path = "../dat-rust" }
+dat = { version = "4.2.0" }
 
 [target.x86_64-pc-windows-msvc]
 rustflags = ["-C", "target-feature=+crt-static"]

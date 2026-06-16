@@ -1,5 +1,6 @@
 use crate::env::ENV;
-use crate::middleware::error::{ApiError, ApiResult};
+use crate::middleware::error::ApiResult;
+use anyhow::anyhow;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 use std::fs;
 use std::fs::File;
@@ -15,7 +16,7 @@ pub fn db_pool() -> &'static DatabaseConnection {
 }
 
 pub async fn bind() -> ApiResult<()> {
-    let db_uri = &ENV.db_uri;
+    let db_uri = &ENV.server.db_uri;
 
     if let Some(file_path) = db_uri.strip_prefix("sqlite:") {
         handle_sqlite_specifics(file_path).await?;
@@ -30,10 +31,10 @@ pub async fn bind() -> ApiResult<()> {
         .acquire_timeout(Duration::from_secs(30))
         .idle_timeout(Duration::from_secs(600))
         .max_lifetime(Duration::from_secs(1800))
-        .sqlx_logging(ENV.debug);
+        .sqlx_logging(ENV.server.debug);
 
     DB_POOL.set(Database::connect(opt).await?)
-        .map_err(|x| ApiError::new500(x.to_string()))?;
+        .map_err(|x| anyhow!(x))?;
     Ok(())
 }
 

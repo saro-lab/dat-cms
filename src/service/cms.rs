@@ -1,6 +1,5 @@
 use crate::entity::dat_cms_cert;
-use crate::middleware::error::{ApiError, ApiResult};
-use dat::certificate::DatCertificate;
+use crate::middleware::error::ApiResult;
 use dat::crypto::DatCryptoAlgorithm;
 use dat::error::DatError;
 use dat::signature::DatSignatureAlgorithm;
@@ -11,54 +10,25 @@ use std::str::FromStr;
 use std::sync::atomic::{AtomicI64, AtomicU64, Ordering};
 use std::sync::OnceLock;
 use tokio::sync::RwLock;
+pub(crate) use crate::service::certificates::{Certificates, GetListCmd, RegisterCmd, SerializedCertificate};
 
-// cache time = 60 secs
-const CACHE_TIME: u64 = 60;
+pub type NewCid = String;
+pub type DeleteCount = u64;
 
-pub(crate) type LastCertificateVersion = i64;
+const DB_DAT_CMS_CERT_RETENTION_SECONDS: u64 = 86400 * 30; // 30 days
+
+const CACHE_SECONDS: u64 = 60; // 1 minute
 static CACHE_EXPIRE: OnceLock<AtomicU64> = OnceLock::new();
 static CACHE_VERSION: OnceLock<AtomicI64> = OnceLock::new();
 static CACHE_CERTIFICATES: OnceLock<RwLock<Vec<SerializedCertificate>>> = OnceLock::new();
 
-#[derive(Debug, Clone)]
-pub struct SerializedCertificate {
-    pub(crate) version: i64,
-    pub(crate) full: String,
-    pub(crate) verify_only: String,
-}
-
-pub struct Certificates {
-    version: i64,
-    list: Vec<String>
-}
-
-impl Certificates {
-    pub fn size(&self) -> usize {
-        self.list.len()
-    }
-
-    pub fn export(&self, prefix_version: bool) -> String {
-        let mut result = String::new();
-
-        if prefix_version {
-            result.push_str(self.version.to_string().as_str());
-            result.push('\n');
-        }
-
-        for node in &self.list {
-            result.push('\n');
-            result.push_str(node);
-        }
-        result
-    }
-}
 
 pub fn bind() {
     CACHE_EXPIRE.set(AtomicU64::new(0)).expect("service::cms::bind() OnceLock Error");
     CACHE_VERSION.set(AtomicI64::new(0)).expect("service::cms::bind() OnceLock Error");
     CACHE_CERTIFICATES.set(RwLock::new(Vec::new())).expect("service::cms::bind() OnceLock Error");
 }
-pub async fn certificates<C: ConnectionTrait>(version: i64, verify_only: bool, db: &C) -> ApiResult<Certificates> {
+pub async fn list<C: ConnectionTrait>(cmd: GetListCmd, db: &C) -> ApiResult<Certificates> {
     let now = now_unix_timestamp();
     let certificates = CACHE_CERTIFICATES.get().unwrap();
     let cache_expire = CACHE_EXPIRE.get().unwrap();
@@ -79,13 +49,14 @@ pub async fn certificates<C: ConnectionTrait>(version: i64, verify_only: bool, d
             *certs_write = new_certs;
             cache_version.store(new_cache_version, Ordering::Release);
 
-            cache_expire.store(now + CACHE_TIME, Ordering::Release);
+            cache_expire.store(now + CACHE_SECONDS, Ordering::Release);
         }
     }
 
     let list = certificates.read().await.iter()
-        .filter(|x| x.version > version)
-        .map(|x| if verify_only { x.verify_only.clone() } else { x.full.clone() })
+        .filter(|x| x.version > cmd.version)
+        .map(|x| if cmd.verify_only { x.verify_only.clone() } else { x.full.clone() })
+        .filter(|x| !x.is_empty())
         .collect::<Vec<String>>();
 
     Ok(Certificates {
@@ -94,35 +65,28 @@ pub async fn certificates<C: ConnectionTrait>(version: i64, verify_only: bool, d
     })
 }
 
-
-
-
-pub async fn generate<C: ConnectionTrait>(
-    signature: String,
-    crypto: String,
-    cron_certificate_propagation_delay_seconds: i64,
-    cron_dat_issuance_duration_seconds: i64,
-    cron_dat_ttl_seconds: i64,
+pub async fn register<C: ConnectionTrait>(
+    cmd: RegisterCmd,
     db: &C
 ) -> ApiResult<(NewCid, DeleteCount)> {
     let now = now_unix_timestamp() as i64;
-    let delete_count = cleanup_expired(db).await?;
+    let delete_count = cleanup(db).await?;
     let cid = generate_cid(db).await?;
     let cid = dat_cms_cert::ActiveModel::generate(
         cid,
-        now + cron_certificate_propagation_delay_seconds,
-        cron_dat_issuance_duration_seconds,
-        cron_dat_ttl_seconds,
-        DatSignatureAlgorithm::from_str(&signature)?,
-        DatCryptoAlgorithm::from_str(&crypto)?,
+        now + cmd.certificate_propagation_delay_seconds,
+        cmd.dat_issuance_duration_seconds,
+        cmd.dat_ttl_seconds,
+        DatSignatureAlgorithm::from_str(&cmd.signature_algorithm)?,
+        DatCryptoAlgorithm::from_str(&cmd.crypto_algorithm)?,
     )?
         .save(db).await?.cid.unwrap();
-    Ok((cid, delete_count))
+    Ok((format!("{cid:x}"), delete_count))
 }
 
-async fn cleanup_expired<C: ConnectionTrait>(db: &C) -> ApiResult<u64> {
-    let clean_date = now_unix_timestamp() - (86400 * 30);
-    Ok(dat_cms_cert::Entity::delete_many().filter(dat_cms_cert::Column::ExpireTime.lt(clean_date)).exec(db).await?.rows_affected)
+async fn cleanup<C: ConnectionTrait>(db: &C) -> ApiResult<u64> {
+    let clean_date = now_unix_timestamp() - DB_DAT_CMS_CERT_RETENTION_SECONDS;
+    Ok(dat_cms_cert::Entity::delete_many().filter(dat_cms_cert::Column::Expire.lt(clean_date)).exec(db).await?.rows_affected)
 }
 
 async fn generate_cid<C: ConnectionTrait>(db: &C) -> ApiResult<i64> {
@@ -135,5 +99,5 @@ async fn generate_cid<C: ConnectionTrait>(db: &C) -> ApiResult<i64> {
             return Ok(cid);
         }
     }
-    Err(ApiError::new500("".to_string()))
+    Err(DatError::EtcError("Fail Generate Cid"))?
 }

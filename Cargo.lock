@@ -808,6 +808,8 @@ dependencies = [
 [[package]]
 name = "dat"
 version = "4.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3232d1ea40829ddbf323386f71738a963ede851dec1652b715d8b54a6be7287e"
 dependencies = [
  "aes-gcm",
  "aws-lc-rs",
@@ -821,12 +823,14 @@ dependencies = [
 name = "dat-cms"
 version = "4.2.0"
 dependencies = [
+ "anyhow",
  "axum",
  "dat",
  "rand 0.10.1",
  "regex",
  "sea-orm",
  "serde",
+ "thiserror",
  "tokio",
  "tokio-cron-scheduler",
  "tower",

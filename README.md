@@ -8,14 +8,11 @@
 
 ### [Quick Start!! Docker, Kubernetes, Binary](https://dat.saro.me/svc/docker-saro-lab-dat-cms)
 
-### [Support Languages](https://dat.saro.me)
-- Rust -> Crates
-- Kotlin, Java -> Maven
-- TypeScript, JavaScript -> Npm
-- Python -> Pypi
-- C# -> Nuget
-- Ruby -> Gem
-- Go
+```
+
+
+```
+
 
 ## Support algorithm
 ### Signature

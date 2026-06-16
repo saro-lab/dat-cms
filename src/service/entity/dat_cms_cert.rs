@@ -66,7 +66,7 @@ impl Model {
         Ok(SerializedCertificate {
             version: self.ver,
             full: certificate.export(false)?,
-            verify_only: certificate.export(true)?
+            verify_only: if certificate.support_verify_only() { certificate.export(true)? } else { "".to_string() }
         })
     }
 }
