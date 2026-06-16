@@ -1,10 +1,10 @@
 [build]
 
-[target.x86_64-pc-windows-msvc]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
+[target.x86_64-pc-windows-gnu]
+rustflags = ["-C", "target-feature=+crt-static", "-C", "link-args=-static"]
+
 [target.aarch64-pc-windows-msvc]
-rustflags = [
-    "-C", "target-feature=+crt-static"
-]
+rustflags = ["-C", "target-feature=+crt-static", "-C", "link-args=-static"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static", "-C", "link-args=-static"]
