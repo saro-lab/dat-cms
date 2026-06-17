@@ -807,21 +807,21 @@ dependencies = [
 
 [[package]]
 name = "dat"
-version = "4.2.0"
+version = "4.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3232d1ea40829ddbf323386f71738a963ede851dec1652b715d8b54a6be7287e"
+checksum = "5b60642e3563df12327dcce94057a15c437c5325bae45e1a8787c45c75f84b60"
 dependencies = [
  "aes-gcm",
  "aws-lc-rs",
  "base64",
- "itertools",
+ "itertools 0.15.0",
  "itoa",
  "thiserror",
 ]
 
 [[package]]
 name = "dat-cms"
-version = "4.2.0"
+version = "4.2.1"
 dependencies = [
  "anyhow",
  "axum",
@@ -1545,6 +1545,15 @@ name = "itertools"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b4baf93f58d4425749ca49a51c50ebab072c5df6994d08fed93541c331481dc"
 dependencies = [
  "either",
 ]
@@ -2389,7 +2398,7 @@ dependencies = [
  "derive_more",
  "futures-util",
  "ipnetwork",
- "itertools",
+ "itertools 0.14.0",
  "log",
  "mac_address",
  "ouroboros",
@@ -2431,7 +2440,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68a91def07bceb98aab308f7dd16c27496b76a6b7b92b94a61b309b5043d93d5"
 dependencies = [
  "heck 0.5.0",
- "itertools",
+ "itertools 0.14.0",
  "pluralizer",
  "proc-macro2",
  "quote",

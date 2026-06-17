@@ -1,6 +1,6 @@
 [package]
 name = "dat-cms"
-version = "4.2.0"
+version = "4.2.1"
 edition = "2024"
 
 [profile.release]
@@ -24,7 +24,11 @@ regex = { version = "1.12.4" }
 anyhow = { version = "1.0.102" }
 thiserror = { version = "2.0.18" }
 
-dat = { version = "4.2.0" }
+dat = { version = "4.2.1" }
+
+[build]
+[target.aarch64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static", "-C", "link-args=-static"]
 
 [target.x86_64-pc-windows-msvc]
-rustflags = ["-C", "target-feature=+crt-static"]
+rustflags = ["-C", "target-feature=+crt-static", "-C", "link-args=-static"]

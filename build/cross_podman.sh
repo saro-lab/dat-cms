@@ -17,6 +17,10 @@ rm -rf target/bin
 mkdir -p target/bin
 
 for TARGET in "${TARGETS[@]}"; do
+    rustup target add "$TARGET" 2>/dev/null
+done
+
+for TARGET in "${TARGETS[@]}"; do
     echo "📦 build: $TARGET"
 
     if [[ "$TARGET" == *"aarch64-apple"* ]]; then
