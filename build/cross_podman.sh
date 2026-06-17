@@ -35,9 +35,9 @@ for TARGET in "${TARGETS[@]}"; do
     fi
 
     if [[ "$TARGET" == *"windows"* ]]; then
-        cp "target/$TARGET/release/dat-cms.exe" "target/bin/$TARGET.exe"
+        cp "target/$TARGET/release/dat-cms.exe" "target/bin/dat-cms-$TARGET.exe"
     else
-        cp "target/$TARGET/release/dat-cms" "target/bin/$TARGET"
+        cp "target/$TARGET/release/dat-cms" "target/bin/dat-cms-$TARGET"
     fi
 
     if [ $? -eq 0 ]; then
