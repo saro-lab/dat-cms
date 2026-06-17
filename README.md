@@ -34,30 +34,12 @@
 
 
 ## Build
-- Linux amd64
-```shell
-# sudo apt-get install musl-tools
-./build/linux_amd64.sh
+- list
 ```
-- Linux arm64
-```shell
-# sudo apt-get install musl-tools
-./build/linux_arm64.sh
-```
-- Mac amd64,
-```shell
-./build/mac_amd64.sh
-```
-- Mac arm64,
-```shell
-./build/mac_arm64.sh
-```
-- Windows amd64,
-```shell
-powershell -ExecutionPolicy Bypass -File .\build\win_amd64.ps1
-```
-- Windows arm64,
-```shell
-powershell -ExecutionPolicy Bypass -File .\build\win_arm64.ps1
-```
+./build/list.sh
 
+ex)
+x86_64-unknown-linux-musl
+
+./build/build.sh x86_64-unknown-linux-musl
+```
