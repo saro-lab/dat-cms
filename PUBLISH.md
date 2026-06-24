@@ -9,6 +9,7 @@ podman manifest create sarolab-dat-cms-manifest
 
 # build --platform linux/arm64
 podman build --memory=10g --memory-swap=-1 \
+    --platform linux/arm64 \
     --manifest sarolab-dat-cms-manifest -t sarolab/dat-cms:latest .
 
 # push (publish)
@@ -25,13 +26,27 @@ podman manifest add --all sarolab-dat-cms-manifest docker://docker.io/sarolab/da
 
 # build --platform linux/amd64
 podman build --memory=32g --memory-swap=-1 \
+    --platform linux/amd64 \
     --manifest sarolab-dat-cms-manifest -t sarolab/dat-cms:latest .
 
 # push (publish)
 podman manifest push sarolab-dat-cms-manifest docker.io/sarolab/dat-cms:latest
-podman manifest push sarolab-dat-cms-manifest docker.io/sarolab/dat-cms:4.2.3
+podman manifest push sarolab-dat-cms-manifest docker.io/sarolab/dat-cms:4.3.0
 ```
 
+## remove
+```
+docker rmi -f $(docker images -q sarolab/dat-cms)
+```
+```shell
+podman run -d -p 8088:80 --name dat-cms-container sarolab/dat-cms
+curl localhost:8088
+podman logs -f dat-cms-container
+
+podman stop dat-cms-container
+podman rm dat-cms-container
+
+```
 
 ## Configuration
 ### Mac
