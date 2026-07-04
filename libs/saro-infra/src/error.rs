@@ -1,9 +1,7 @@
 use anyhow::anyhow;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use axum::Extension;
 use std::any::Any;
-use std::net::IpAddr;
 use thiserror::Error;
 
 pub type ApiResult<T> = Result<T, ApiError>;
@@ -147,10 +145,6 @@ fn escape_json_into(s: &str, out: &mut String) {
         start = i + 1;
     }
     out.push_str(&s[start..]);
-}
-
-pub async fn handle_error_404(method: axum::http::Method, uri: axum::http::Uri, Extension(ip): Extension<IpAddr>) -> Response {
-    ApiError::NotFound(method.to_string(), uri.path().to_string(), ip.to_string()).into_response()
 }
 
 pub fn handle_panic(err: Box<dyn Any + Send>) -> Response {

@@ -17,7 +17,7 @@ pub struct GetCertificateQuery {
     pub version: Option<i64>
 }
 
-pub async fn router() -> Router {
+pub fn router() -> Router {
     Router::new()
         .route(format!("/{API_VERSION}/cert/{{signature_algorithm}}/{{crypto_algorithm}}/{{certificate_propagation_delay_seconds}}/{{dat_issuance_duration_seconds}}/{{dat_ttl_seconds}}").as_str(), post(generate_certificate))
         .route(format!("/{API_VERSION}/certs").as_str(), get(get_certificate_list))

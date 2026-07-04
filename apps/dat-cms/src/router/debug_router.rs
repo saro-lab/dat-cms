@@ -8,12 +8,11 @@ use saro_infra::database::db_pool;
 use saro_infra::error::ApiError::{BadRequest, Unauthorized};
 use saro_infra::error::{ApiError, ApiResult};
 use crate::dto::certificates::GetListCmd;
-use crate::handler;
 use crate::infrastructure::session::Session;
 use crate::service::cms_service;
 
-pub async fn debug_router() -> Router {
-    handler::router().await
+pub fn debug_router() -> Router {
+    Router::new()
         .route("/debug/dat", post(issue))
         .route("/debug/dat/{dat}", get(parse))
         .route("/debug/error1", get(error1))
