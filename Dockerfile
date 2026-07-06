@@ -3,7 +3,7 @@ FROM --platform=$BUILDPLATFORM rust:trixie AS builder
 ARG TARGETPLATFORM
 ARG TARGETARCH
 
-RUN apt-get update && apt-get install -y musl-tools perl make curl
+RUN apt-get update && apt-get install -y musl-tools
 
 RUN case "${TARGETARCH}" in \
         "amd64") \
@@ -24,8 +24,6 @@ COPY libs ./libs
 COPY apps ./apps
 
 RUN RUST_TARGET=$(cat /RUST_TARGET) && \
-    CC_aarch64_unknown_linux_musl=musl-gcc \
-    CC_x86_64_unknown_linux_musl=musl-gcc \
     RUSTFLAGS="-C target-feature=+crt-static" \
     cargo build --release --target "${RUST_TARGET}" && \
     cp target/${RUST_TARGET}/release/dat-cms /app/dat-cms-bin
