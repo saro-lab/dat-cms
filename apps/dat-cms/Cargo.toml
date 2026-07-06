@@ -15,5 +15,6 @@ tracing = { workspace = true }
 rand = { workspace = true }
 regex = { workspace = true }
 sea-orm = { workspace = true }
+openssl = { workspace = true }
 
 dat = { workspace = true }

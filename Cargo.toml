@@ -21,6 +21,7 @@ rand = { version = "0.10.2" }
 regex = { version = "1.12.4" }
 anyhow = { version = "1.0.103" }
 thiserror = { version = "2.0.18" }
+openssl = { version = "0.10.81", features = ["vendored"] }
 sea-orm = { version = "2.0.0-rc.42", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-native-tls"] }
 
 dat = { version = "4.3.3" }
