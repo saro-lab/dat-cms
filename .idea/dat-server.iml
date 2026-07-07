@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/_old/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/apps/dat-cms/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/saro-infra/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/saro-core/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

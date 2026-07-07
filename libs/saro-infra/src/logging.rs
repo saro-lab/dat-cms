@@ -16,7 +16,7 @@ pub struct LogConfig {
     pub debug: bool,
 }
 
-pub fn bind(config: &LogConfig) {
+pub fn init(config: &LogConfig) {
     let file = if config.file {
         let file_appender = RollingFileAppender::builder()
             .rotation(Rotation::DAILY)

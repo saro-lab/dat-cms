@@ -1,3 +1,19 @@
+
+##
+```shell
+podman login docker.io
+
+# amd64 + arm64 를 한 번에 빌드하고 매니페스트(멀티아치 이미지) 생성
+podman build --memory=16g --memory-swap=-1 \
+    --platform linux/amd64,linux/arm64 \
+    --manifest docker.io/sarolab/dat-cms:latest1 .
+
+# push (publish)
+podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:latest
+podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:4.3.3
+```
+
+
 ## Create manifest
 ## ARM64
 ``` shell

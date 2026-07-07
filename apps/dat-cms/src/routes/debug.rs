@@ -1,15 +1,15 @@
-use crate::database::db_pool;
 use crate::dto::cert::ListCertificatesQuery;
 use crate::error::CmsResult;
 use crate::request_context::RequestContext;
-use crate::service::cert_service;
+use crate::services::cert_service;
+use anyhow::anyhow;
 use axum::extract::Path;
 use axum::routing::{get, post};
 use axum::{Extension, Router};
 use dat::error::DatError;
 use dat::manager::DatManager;
-use saro_infra::error::ApiError::{BadRequest, Unauthorized};
-use saro_infra::error::ApiError;
+use saro_core::error::ApiError;
+use saro_infra::database::db;
 use sea_orm::DbErr;
 
 pub fn router() -> Router {
@@ -28,7 +28,8 @@ pub fn router() -> Router {
 async fn issue(body: String) -> CmsResult<String> {
     tracing::info!("POST /debug/dat issue (Debug)");
 
-    let lines = body.split('\n')
+    let lines = body
+        .split('\n')
         .filter(|line| !line.is_empty())
         .collect::<Vec<&str>>();
 
@@ -51,7 +52,15 @@ async fn parse(Path(dat): Path<String>) -> CmsResult<String> {
 
 async fn manager() -> CmsResult<DatManager> {
     let manager: DatManager = DatManager::new();
-    manager.import(&cert_service::list(ListCertificatesQuery { version: 0, verify_only: false }, db_pool()).await?.export(false), true)?;
+    let certs = cert_service::list(
+        ListCertificatesQuery {
+            version: 0,
+            verify_only: false,
+        },
+        db(),
+    )
+    .await?;
+    manager.import(&certs.export(false), true)?;
     Ok(manager)
 }
 
@@ -65,7 +74,7 @@ async fn error2() -> CmsResult<()> {
 }
 
 async fn error3() -> CmsResult<()> {
-    Err(ApiError::Etc("any error".to_string()))?
+    Err(ApiError::Internal(anyhow!("any error")))?
 }
 
 async fn error4() -> CmsResult<()> {
@@ -77,9 +86,9 @@ async fn error5() -> CmsResult<()> {
 }
 
 async fn error6() -> CmsResult<()> {
-    Err(BadRequest("bad request error".to_string()))?
+    Err(ApiError::BadRequest())?
 }
 
 async fn error7(Extension(_): Extension<RequestContext>) -> CmsResult<()> {
-    Err(Unauthorized())?
+    Err(ApiError::Unauthorized())?
 }

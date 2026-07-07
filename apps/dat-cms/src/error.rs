@@ -1,6 +1,9 @@
+use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use dat::error::DatError;
-use saro_infra::error::ApiError;
+use saro_core::api_response::ApiResponse;
+use saro_core::codes;
+use saro_core::error::ApiError;
 use sea_orm::DbErr;
 use thiserror::Error;
 
@@ -26,7 +29,11 @@ impl IntoResponse for CmsError {
             CmsError::Api(err) => err.into_response(),
             CmsError::Dat(err) => {
                 tracing::error!("DAT: {:?}", err);
-                ApiError::Etc(err.to_string()).into_response()
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    ApiResponse::<()>::code(codes::INTERNAL, None),
+                )
+                    .into_response()
             }
         }
     }

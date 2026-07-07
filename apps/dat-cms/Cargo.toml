@@ -1,20 +1,26 @@
 [package]
 name = "dat-cms"
-version = "4.3.3"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
 
 [dependencies]
+saro-core = { workspace = true }
 saro-infra = { workspace = true }
+
+anyhow = { workspace = true }
 axum = { workspace = true }
-tower-http = { workspace = true }
-tokio = { workspace = true }
-tokio-cron-scheduler = { workspace = true }
-serde = { workspace = true }
-thiserror = { workspace = true }
-tracing = { workspace = true }
 rand = { workspace = true }
 regex = { workspace = true }
 sea-orm = { workspace = true }
-openssl = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tokio-cron-scheduler = { workspace = true }
+tower-http = { workspace = true }
+tracing = { workspace = true }
 
 dat = { workspace = true }

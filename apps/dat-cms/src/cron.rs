@@ -1,29 +1,37 @@
-use crate::database::db_pool;
 use crate::env::ENV;
 use crate::error::CmsResult;
-use crate::service::cert_service;
+use crate::services::cert_service;
+use saro_infra::database::db;
 use tokio_cron_scheduler::{Job, JobScheduler};
 
-pub async fn bind() -> CmsResult<()> {
+// SINGLE_NODE 설정이 있으면 즉시 1회 인증서를 등록하고, 주기 등록 cron을 시작한다.
+pub async fn start() -> CmsResult<()> {
     let Some(cron) = ENV.cron.as_ref() else {
         return Ok(());
     };
 
-    cert_service::register(cron.cmd.clone(), db_pool()).await?;
+    cert_service::register(cron.cmd.clone(), db()).await?;
 
-    let sched = JobScheduler::new().await.expect("Failed to create job scheduler");
+    let sched = JobScheduler::new()
+        .await
+        .expect("Failed to create job scheduler");
 
-    sched.add(
-        Job::new_async(cron.expression.clone(), |_, _| {
-            Box::pin(async {
-                tracing::info!("DatCertificate Generate Cron");
-                if let Some(cron) = ENV.cron.as_ref()
-                    && let Err(err) = cert_service::register(cron.cmd.clone(), db_pool()).await {
-                    tracing::error!("DatCertificate Generate Cron failed: {:?}", err);
-                }
+    sched
+        .add(
+            Job::new_async(cron.expression.clone(), |_, _| {
+                Box::pin(async {
+                    tracing::info!("DatCertificate Generate Cron");
+                    if let Some(cron) = ENV.cron.as_ref()
+                        && let Err(err) = cert_service::register(cron.cmd.clone(), db()).await
+                    {
+                        tracing::error!("DatCertificate Generate Cron failed: {:?}", err);
+                    }
+                })
             })
-        }).expect("Failed to create cron job"),
-    ).await.expect("Failed to add cron job");
+            .expect("Failed to create cron job"),
+        )
+        .await
+        .expect("Failed to add cron job");
 
     sched.start().await.expect("Failed to start job scheduler");
 

@@ -2,26 +2,35 @@
 members = ["apps/*", "libs/*"]
 resolver = "2"
 
+[workspace.package]
+version = "4.3.3"
+edition = "2024"
+publish = false
+
+[workspace.lints.clippy]
+
 [profile.release]
 opt-level = 3
 lto = "fat"
 codegen-units = 1
 
 [workspace.dependencies]
+saro-core = { path = "libs/saro-core" }
 saro-infra = { path = "libs/saro-infra" }
+
+anyhow = { version = "1.0.103" }
 axum = { version = "0.8.9", features = ["macros", "json"] }
-tower-http = { version = "0.7.0", features = ["catch-panic"] }
-tokio = { version = "1.52.3", features = ["full"] }
-tokio-cron-scheduler = { version = "0.15.1" }
-serde = { version = "1.0.228", features = ["derive"] }
-tracing = { version = "0.1.44" }
-tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json", "time"] }
-tracing-appender = { version = "0.2.5" }
 rand = { version = "0.10.2" }
 regex = { version = "1.12.4" }
-anyhow = { version = "1.0.103" }
+sea-orm = { version = "2.0.0-rc.42", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-rustls"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = { version = "1.0.150" }
 thiserror = { version = "2.0.18" }
-openssl = { version = "0.10.81", features = ["vendored"] }
-sea-orm = { version = "2.0.0-rc.42", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-native-tls"] }
+tokio = { version = "1.52.3", features = ["full"] }
+tokio-cron-scheduler = { version = "0.15.1" }
+tower-http = { version = "0.7.0", features = ["catch-panic"] }
+tracing = { version = "0.1.44" }
+tracing-appender = { version = "0.2.5" }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json", "time"] }
 
 dat = { version = "4.3.3" }
