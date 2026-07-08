@@ -6,11 +6,11 @@ podman login docker.io
 # amd64 + arm64 를 한 번에 빌드하고 매니페스트(멀티아치 이미지) 생성
 podman build --memory=16g --memory-swap=-1 \
     --platform linux/amd64,linux/arm64 \
-    --manifest docker.io/sarolab/dat-cms:latest1 .
+    --manifest docker.io/sarolab/dat-cms:latest .
 
 # push (publish)
 podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:latest
-podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:4.3.3
+podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:4.3.4
 ```
 
 
@@ -47,7 +47,7 @@ podman build --memory=32g --memory-swap=-1 \
 
 # push (publish)
 podman manifest push sarolab-dat-cms-manifest docker.io/sarolab/dat-cms:latest
-podman manifest push sarolab-dat-cms-manifest docker.io/sarolab/dat-cms:4.3.3
+podman manifest push sarolab-dat-cms-manifest docker.io/sarolab/dat-cms:4.3.4
 ```
 
 ## remove
@@ -86,4 +86,25 @@ export CROSS_CONTAINER_ENGINE=podman
 
 # windows ps
 $env:CROSS_CONTAINER_ENGINE="podman"
+```
+
+```
+RUN --mount=type=cache,target=/usr/local/cargo/registry,id=global-registry \
+    --mount=type=cache,target=/usr/local/cargo/git,id=global-git \
+    --mount=type=cache,target=/work/target,id=saro-lab-dat-cms--${APP} \
+    RUST_TARGET="$(uname -m)-unknown-linux-musl" && \
+    RUSTFLAGS="-C target-feature=+crt-static" \
+    cargo build --release --target "${RUST_TARGET}" && \
+    cp "target/${RUST_TARGET}/release/dat-cms" /app/dat-cms-bin
+```
+
+```
+# build
+podman build --build-arg APP=dat-cms -t dat-cms:test .
+# run
+podman run -d -p 8088:80 --name dat-cms-container dat-cms:test
+# ps
+podman ps
+# delete
+podman rm -f dat-cms-container
 ```

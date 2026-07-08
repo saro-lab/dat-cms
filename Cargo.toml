@@ -3,7 +3,7 @@ members = ["apps/*", "libs/*"]
 resolver = "2"
 
 [workspace.package]
-version = "4.3.3"
+version = "4.3.4"
 edition = "2024"
 publish = false
 

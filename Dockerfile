@@ -9,7 +9,9 @@ COPY .cargo ./.cargo
 COPY libs ./libs
 COPY apps ./apps
 
-RUN RUST_TARGET="$(uname -m)-unknown-linux-musl" && \
+RUN --mount=type=cache,target=/usr/local/cargo/registry,id=global-registry \
+    --mount=type=cache,target=/usr/local/cargo/git,id=global-git \
+    RUST_TARGET="$(uname -m)-unknown-linux-musl" && \
     RUSTFLAGS="-C target-feature=+crt-static" \
     cargo build --release --target "${RUST_TARGET}" && \
     cp "target/${RUST_TARGET}/release/dat-cms" /app/dat-cms-bin
