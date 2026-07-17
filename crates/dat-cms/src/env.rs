@@ -1,7 +1,7 @@
 use crate::dto::cert::RegisterCertificateCommand;
 use dat::crypto::DatCryptoAlgorithm;
 use dat::signature::DatSignatureAlgorithm;
-use saro_infra::logging::LogConfig;
+use infra::logging::LogConfig;
 use std::env;
 use std::str::FromStr;
 use std::sync::LazyLock;

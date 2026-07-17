@@ -1,13 +1,12 @@
 use crate::dto::cert::{CertificateList, ListCertificatesQuery, RegisterCertificateCommand};
 use crate::env::ENV;
-use saro_core::error::ApiResult;
 use crate::request_context::RequestContext;
 use crate::services::cert_service;
 use axum::extract::{Path, Query};
 use axum::routing::{get, post};
 use axum::{Extension, Router};
-use saro_core::api_response::ApiResponse;
-use saro_infra::database::db;
+use infra::api::{Api, ApiResult};
+use infra::database::db;
 use serde::Deserialize;
 
 pub static API_VERSION: &str = "v1";
@@ -30,9 +29,6 @@ pub fn router() -> Router {
         .route("/version/api", get(version_api))
 }
 
-// ===============================================================
-// - public api
-// ===============================================================
 async fn health() -> &'static str {
     "OK"
 }
@@ -43,9 +39,6 @@ async fn version_api() -> &'static str {
     API_VERSION
 }
 
-// ===============================================================
-// - master api
-// ===============================================================
 async fn version(Extension(ctx): Extension<RequestContext>) -> ApiResult<&'static str> {
     ctx.is_master()?;
     Ok(&ENV.server.version)
@@ -80,9 +73,6 @@ pub async fn generate_certificate(
     Ok("OK".to_string())
 }
 
-// ===============================================================
-// - cert_full api
-// ===============================================================
 pub async fn get_certificate_list(
     Query(params): Query<GetCertificateQuery>,
     Extension(ctx): Extension<RequestContext>,
@@ -103,7 +93,7 @@ pub async fn get_certificate_list(
 pub async fn get_certificate_list_json(
     Query(params): Query<GetCertificateQuery>,
     Extension(ctx): Extension<RequestContext>,
-) -> ApiResult<ApiResponse<CertificateList>> {
+) -> ApiResult<Api<CertificateList>> {
     ctx.is_cert_full()?;
     let certs = cert_service::list(
         ListCertificatesQuery {
@@ -114,12 +104,9 @@ pub async fn get_certificate_list_json(
     )
     .await?;
     tracing::info!("{} GET {} CERTIFICATES", ctx.ip(), certs.size());
-    Ok(ApiResponse::ok(Some(certs)))
+    Ok(Api::ok(certs))
 }
 
-// ===============================================================
-// - cert_verify api
-// ===============================================================
 pub async fn get_certificate_verify_only_list(
     Query(params): Query<GetCertificateQuery>,
     Extension(ctx): Extension<RequestContext>,
@@ -140,7 +127,7 @@ pub async fn get_certificate_verify_only_list(
 pub async fn get_certificate_verify_only_list_json(
     Query(params): Query<GetCertificateQuery>,
     Extension(ctx): Extension<RequestContext>,
-) -> ApiResult<ApiResponse<CertificateList>> {
+) -> ApiResult<Api<CertificateList>> {
     ctx.is_cert_verify()?;
     let certs = cert_service::list(
         ListCertificatesQuery {
@@ -151,5 +138,5 @@ pub async fn get_certificate_verify_only_list_json(
     )
     .await?;
     tracing::info!("{} GET {} VERIFY CERTIFICATES", ctx.ip(), certs.size());
-    Ok(ApiResponse::ok(Some(certs)))
+    Ok(Api::ok(certs))
 }

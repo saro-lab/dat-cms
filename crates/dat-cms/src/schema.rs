@@ -1,5 +1,5 @@
 use crate::entity::dat_cms_cert;
-use saro_core::error::ApiResult;
+use infra::api::ApiResult;
 use sea_orm::{ConnectionTrait, DatabaseConnection, Schema};
 
 pub async fn sync(db: &DatabaseConnection) -> ApiResult<()> {

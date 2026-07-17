@@ -4,8 +4,8 @@ use axum::extract::ConnectInfo;
 use axum::http::Request;
 use axum::middleware::Next;
 use axum::response::Response;
-use saro_core::error::{ApiError, ApiResult};
-use saro_infra::client_ip::client_ip;
+use infra::api::{Api, ApiResult};
+use infra::client_ip::client_ip;
 use std::net::{IpAddr, SocketAddr};
 
 #[derive(Clone, Debug)]
@@ -32,7 +32,7 @@ impl RequestContext {
         if allows.is_empty() || (!self.token.is_empty() && allows.contains(&self.token)) {
             Ok(())
         } else {
-            Err(ApiError::Unauthorized)
+            Err(Api::unauthorized())?
         }
     }
 }

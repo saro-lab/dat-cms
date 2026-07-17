@@ -1,9 +1,9 @@
 [workspace]
-members = ["apps/*", "libs/*"]
+members = ["crates/*"]
 resolver = "2"
 
 [workspace.package]
-version = "4.3.4"
+version = "4.3.5"
 edition = "2024"
 publish = false
 
@@ -13,20 +13,19 @@ publish = false
 opt-level = 3
 lto = "fat"
 codegen-units = 1
+strip = true
 
 [workspace.dependencies]
-saro-core = { path = "libs/saro-core" }
-saro-infra = { path = "libs/saro-infra" }
+infra = { path = "crates/infra" }
 
 anyhow = { version = "1.0.103" }
 axum = { version = "0.8.9", features = ["macros", "json"] }
 rand = { version = "0.10.2" }
-regex = { version = "1.12.4" }
-sea-orm = { version = "2.0.0-rc.42", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-rustls"] }
+regex = { version = "1.13.1" }
+sea-orm = { version = "2.0.0-rc.43", features = ["sqlx-all", "with-ipnetwork", "runtime-tokio-rustls"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.150" }
-thiserror = { version = "2.0.18" }
-tokio = { version = "1.52.3", features = ["full"] }
+tokio = { version = "1.52.4", features = ["full"] }
 tokio-cron-scheduler = { version = "0.15.1" }
 tower-http = { version = "0.7.0", features = ["catch-panic"] }
 tracing = { version = "0.1.44" }

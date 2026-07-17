@@ -80,6 +80,24 @@ fn setup_panic_hook() {
         tracing::error!(
             message = payload,
             location = location,
+            backtrace = backtrace_head(),
         );
     }));
+}
+
+fn backtrace_head() -> String {
+    const LINES: usize = 5;
+
+    std::backtrace::Backtrace::force_capture()
+        .to_string()
+        .lines()
+        .skip_while(|l| {
+            l.contains("backtrace")
+                || l.contains("panic")
+                || l.contains("unwind")
+                || l.trim_start().starts_with("at ")
+        })
+        .take(LINES)
+        .collect::<Vec<_>>()
+        .join("\n")
 }

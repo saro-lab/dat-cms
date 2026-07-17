@@ -1,7 +1,7 @@
 use crate::dto::cert::{CertificateList, ListCertificatesQuery, RegisterCertificateCommand, CachedCertificate};
 use crate::env::ENV;
 use crate::entity::dat_cms_cert;
-use saro_core::error::{ApiResult, ErrMap};
+use infra::api::ApiResult;
 use dat::crypto::DatCryptoAlgorithm;
 use dat::error::DatError;
 use dat::signature::DatSignatureAlgorithm;
@@ -16,7 +16,7 @@ use tokio::sync::RwLock;
 pub type NewCid = String;
 pub type DeleteCount = u64;
 
-const DB_DAT_CMS_CERT_RETENTION_SECONDS: u64 = 86400 * 30; // 30 days
+const DB_DAT_CMS_CERT_RETENTION_SECONDS: u64 = 86400 * 30;
 
 static CACHE_EXPIRE: AtomicU64 = AtomicU64::new(0);
 static CACHE_VERSION: AtomicI64 = AtomicI64::new(0);
@@ -49,17 +49,18 @@ pub async fn list<C: ConnectionTrait>(cmd: ListCertificatesQuery, db: &C) -> Api
 
     let cache_version = CACHE_VERSION.load(Ordering::Relaxed);
 
-    // clear invalid version
     let version = if cache_version >= cmd.version {
         cmd.version
     } else {
         0
     };
 
-    let list = CACHE_CERTIFICATES.read().await.iter()
-        .filter(|x| x.version > version)
-        .map(|x| if cmd.verify_only { x.verify_only.clone() } else { x.full.clone() })
-        .filter(|x| !x.is_empty())
+    let certs = CACHE_CERTIFICATES.read().await;
+    let start = certs.partition_point(|x| x.version <= version);
+    let list = certs[start..].iter()
+        .map(|x| if cmd.verify_only { &x.verify_only } else { &x.full })
+        .filter(|s| !s.is_empty())
+        .cloned()
         .collect::<Vec<String>>();
 
     Ok(CertificateList {
@@ -86,9 +87,9 @@ pub async fn register<C: ConnectionTrait>(
         start,
         dur,
         cmd.dat_ttl_seconds,
-        DatSignatureAlgorithm::from_str(&cmd.signature_algorithm).err_map()?,
-        DatCryptoAlgorithm::from_str(&cmd.crypto_algorithm).err_map()?,
-    ).err_map()?
+        DatSignatureAlgorithm::from_str(&cmd.signature_algorithm)?,
+        DatCryptoAlgorithm::from_str(&cmd.crypto_algorithm)?,
+    )?
         .save(db).await?.cid.unwrap();
     Ok((format!("{cid:x}"), delete_count))
 }
@@ -121,5 +122,5 @@ async fn generate_cid<C: ConnectionTrait>(db: &C) -> ApiResult<i64> {
             return Ok(cid);
         }
     }
-    Err(DatError::EtcError("Fail Generate Cid")).err_map()
+    Err(DatError::EtcError("Fail Generate Cid"))?
 }
