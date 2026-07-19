@@ -1,0 +1,22 @@
+# 빌드 및 배포 관련
+build/
+dist/
+saro_dat.egg-info/
+nosetests.xml
+pip-wheel-metadata/
+
+# 가상환경 (uv 및 표준 venv)
+.venv/
+env/
+venv/
+
+# 캐시 및 임시 파일
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+/target
+/logs
+
+.DS_Store

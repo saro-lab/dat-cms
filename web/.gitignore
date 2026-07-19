@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# VitePress build artifacts
+docs/.vitepress/cache
+docs/.vitepress/dist
+
+# Cloudflare Wrangler
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
+# Environment
+.env*
+!.env.example
+
+# Logs
+logs
+*.log
+
+# Editors / IDE
+.fleet
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
