@@ -5,8 +5,6 @@ import (
 	"math/rand/v2"
 	"testing"
 	"time"
-
-	"github.com/saro-lab/dat-go/v4"
 )
 
 func randStringEcdsaBench() string {

@@ -5,7 +5,7 @@ import (
 	"math/rand/v2"
 	"testing"
 
-	"github.com/saro-lab/dat-go/v4"
+	"github.com/saro-lab/dat/clients/dat-go/v4"
 )
 
 func randStringCert() string {
