@@ -1,5 +1,5 @@
 # DAT Go Library
-- [Github / Test Code](https://github.com/saro-lab/dat-go)
+- [Github / Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-go)
 
 ## {{t('repository')}}
 <LibUnit :lib="lib" class="no-title"/>
@@ -7,7 +7,7 @@
 
 ## {{t('example')}}: {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: cms_manager_test.go](https://github.com/saro-lab/dat-go/blob/master/cms_manager_test.go)
+- [{{t('example')}}: cms_manager_test.go](https://github.com/saro-lab/dat/tree/master/clients/dat-go/blob/master/cms_manager_test.go)
 
 #### init
 ```go
@@ -66,9 +66,9 @@ fmt.Printf("payload secure: %q\n", payload.SecureText())
 ```
 
 ## {{t('example')}}: {{t('manual_code')}}
-- [{{t('example')}}: manager_test.go](https://github.com/saro-lab/dat-go/blob/master/manager_test.go)
-- [{{t('example')}}: manager_example_test.go](https://github.com/saro-lab/dat-go/blob/master/manager_example_test.go)
-- [{{t('example')}}: hard_test.go](https://github.com/saro-lab/dat-go/blob/master/hard_test.go)
+- [{{t('example')}}: manager_test.go](https://github.com/saro-lab/dat/tree/master/clients/dat-go/blob/master/manager_test.go)
+- [{{t('example')}}: manager_example_test.go](https://github.com/saro-lab/dat/tree/master/clients/dat-go/blob/master/manager_example_test.go)
+- [{{t('example')}}: hard_test.go](https://github.com/saro-lab/dat/tree/master/clients/dat-go/blob/master/hard_test.go)
 ```go
 manager := dat.NewManager()
 

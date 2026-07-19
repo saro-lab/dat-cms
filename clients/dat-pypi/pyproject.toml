@@ -12,7 +12,7 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://dat.saro.me"
-"Repository" = "https://github.com/saro-lab/dat-pypi"
+"Repository" = "https://github.com/saro-lab/dat/tree/master/clients/dat-pypi"
 "Documentation" = "https://dat.saro.me/ko/libs/pypi-saro-dat"
 
 [dependency-groups]

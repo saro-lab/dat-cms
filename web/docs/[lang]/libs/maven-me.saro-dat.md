@@ -1,7 +1,7 @@
 # DAT Java, Kotlin Library
-- [Github](https://github.com/saro-lab/dat-maven)
-- [Java Test Code](https://github.com/saro-lab/dat-maven/tree/master/src/test/java/test/java)
-- [Kotlin Test Code](https://github.com/saro-lab/dat-maven/tree/master/src/test/kotlin/test/kt)
+- [Github](https://github.com/saro-lab/dat/tree/master/clients/dat-maven)
+- [Java Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/tree/master/src/test/java/test/java)
+- [Kotlin Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/tree/master/src/test/kotlin/test/kt)
 
 ## {{t('repository')}}
 <LibUnit :lib="lib" class="no-title"/>
@@ -11,7 +11,7 @@
 
 #### {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: ExampleCmsManagerTest.java](https://github.com/saro-lab/dat-maven/blob/master/src/test/java/test/java/ExampleCmsManagerTest.java)
+- [{{t('example')}}: ExampleCmsManagerTest.java](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/blob/master/src/test/java/test/java/ExampleCmsManagerTest.java)
 ```java
 // singleton
 DatCmsManager manager = DatCmsManager.builder()
@@ -42,11 +42,11 @@ String payloadSecure = payload.getSecure();
 
 System.out.println("payload plain : " + payloadPlain);
 System.out.println("payload secure : " + payloadSecure);
-``` 
+```
 
 #### {{t('manual_code')}}
-- [{{t('example')}}: ManagerTest.java](https://github.com/saro-lab/dat-maven/blob/master/src/test/java/test/java/ManagerTest.java)
-- [{{t('example')}}: HardTest.java](https://github.com/saro-lab/dat-maven/blob/master/src/test/java/test/java/HardTest.java)
+- [{{t('example')}}: ManagerTest.java](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/blob/master/src/test/java/test/java/ManagerTest.java)
+- [{{t('example')}}: HardTest.java](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/blob/master/src/test/java/test/java/HardTest.java)
 ```java
 DatManager manager = DatManager.newInstance();
 manager.imports(List.of(DatCertificate.generate(
@@ -71,7 +71,7 @@ assert secure.equals(newPayload.getSecure());
 
 #### {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: ExampleCmsManagerTest.kt](https://github.com/saro-lab/dat-maven/tree/master/src/test/kotlin/test/kt/ExampleCmsManagerTest.kt)
+- [{{t('example')}}: ExampleCmsManagerTest.kt](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/tree/master/src/test/kotlin/test/kt/ExampleCmsManagerTest.kt)
 ```kt
 // singleton
 val manager = builder()
@@ -105,8 +105,8 @@ println("payload secure : " + payloadSecure)
 ```
 
 #### {{t('manual_code')}}
-- [{{t('example')}}: ManagerTest.kt](https://github.com/saro-lab/dat-maven/tree/master/src/test/kotlin/test/kt/ManagerTest.kt)
-- [{{t('example')}}: HardTest.kt](https://github.com/saro-lab/dat-maven/tree/master/src/test/kotlin/test/kt/HardTest.kt)
+- [{{t('example')}}: ManagerTest.kt](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/tree/master/src/test/kotlin/test/kt/ManagerTest.kt)
+- [{{t('example')}}: HardTest.kt](https://github.com/saro-lab/dat/tree/master/clients/dat-maven/tree/master/src/test/kotlin/test/kt/HardTest.kt)
 ```kt
 val manager = newInstance()
 

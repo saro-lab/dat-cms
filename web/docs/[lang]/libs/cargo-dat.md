@@ -1,10 +1,10 @@
 # DAT Rust Library
-- [Github](https://github.com/saro-lab/dat-rust) / [Test Code](https://github.com/saro-lab/dat-rust/blob/master/tests/)
+- [Github](https://github.com/saro-lab/dat/tree/master/clients/dat-rust) / [Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-rust/blob/master/tests/)
 
 
 ## {{t('example')}}: {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: example_cms_manager_test.rs](https://github.com/saro-lab/dat-rust/blob/master/tests/example_cms_manager_test.rs)
+- [{{t('example')}}: example_cms_manager_test.rs](https://github.com/saro-lab/dat/tree/master/clients/dat-rust/blob/master/tests/example_cms_manager_test.rs)
 ##### {{t('repository')}}
 <CodeBox lang="toml" :code="cmsRepo"/>
 
@@ -28,7 +28,7 @@ pub fn init() {
       //.token("12345678901b") // use access token
       .build().await;
     DAT_CMS_MANAGER.set(manager).map_err(|_| "failed to set auto sync manager".to_string()).unwrap()
-    
+
     // manual sync
     // get_cms_manager().unwrap().sync().await.unwrap();
 }
@@ -55,8 +55,8 @@ println!("payload secure: {:?}", payload.secure_text()?);
 ```
 
 ## {{t('example')}}: {{t('manual_code')}}
-- [manager_test.rs](https://github.com/saro-lab/dat-rust/blob/master/tests/manager_test.rs)
-- [hard_test.rs](https://github.com/saro-lab/dat-rust/blob/master/tests/hard_test.rs)
+- [manager_test.rs](https://github.com/saro-lab/dat/tree/master/clients/dat-rust/blob/master/tests/manager_test.rs)
+- [hard_test.rs](https://github.com/saro-lab/dat/tree/master/clients/dat-rust/blob/master/tests/hard_test.rs)
 
 ##### {{t('repository')}}
 

@@ -6,8 +6,8 @@
 - [Java / Kotlin Example](https://dat.saro.me/libs/maven-me.saro-dat)
 
 ### Support Platform
-- [Rust](https://github.com/saro-lab/dat-rust)
-- [Java, Kotlin](https://github.com/saro-lab/dat-maven)
+- [Rust](https://github.com/saro-lab/dat/tree/master/clients/dat-rust)
+- [Java, Kotlin](https://github.com/saro-lab/dat/tree/master/clients/dat-maven)
 - [Javascript, Typescript](https://github.com/saro-lab/dat-npm)
 - [C#](https://github.com/saro-lab/dat-nuget)
 - [Python](https://github.com/saro-lab/dat-pypi)
@@ -44,7 +44,7 @@
 Plain : iFpSJTKINZnvDwZnZTZQA6yc4tMTDLJIQPOd6tN3BHSXThwKjmopb2wJh2K49aIBcECTTaib55uAGYEpVFrnq3fg54ZPYbkQdEoF
 Secure : msrJSyWq7d71HEqNFtuI3os4Ks4uDlh2oqUZ61FPi5HERW3R3bPJ3uz3uTNagPKYqL2KmUL0b3fwwxSJXS1EMRjy18liSvbGSUVA
 
-Multi-Thread 
+Multi-Thread
 HMAC-SHA256-MFS IV-AES128-GCM Issue * 10000 : 121ms
 HMAC-SHA256-MFS IV-AES128-GCM Parse * 10000 : 30ms
 HMAC-SHA256-MFS IV-AES256-GCM Issue * 10000 : 22ms
@@ -70,7 +70,7 @@ ECDSA-P521 IV-AES128-GCM Parse * 10000 : 681ms
 ECDSA-P521 IV-AES256-GCM Issue * 10000 : 473ms
 ECDSA-P521 IV-AES256-GCM Parse * 10000 : 580ms
 
-Single-Thread 
+Single-Thread
 HMAC-SHA256-MFS IV-AES128-GCM Issue * 10000 : 30ms
 HMAC-SHA256-MFS IV-AES128-GCM Parse * 10000 : 30ms
 HMAC-SHA256-MFS IV-AES256-GCM Issue * 10000 : 32ms

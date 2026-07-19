@@ -1,5 +1,5 @@
 # DAT C# Library
-- [Github](https://github.com/saro-lab/dat-nuget) / [Test Code](https://github.com/saro-lab/dat-nuget/tree/master/Saro.Dat.Tests)
+- [Github](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget) / [Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget/tree/master/Saro.Dat.Tests)
 
 ## {{t('repository')}}
 <LibUnit :lib="lib" class="no-title"/>
@@ -9,7 +9,7 @@
 
 #### {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: ExampleCmsManagerTest.cs](https://github.com/saro-lab/dat-nuget/blob/master/Saro.Dat.Tests/ExampleCmsManagerTest.cs)
+- [{{t('example')}}: ExampleCmsManagerTest.cs](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget/blob/master/Saro.Dat.Tests/ExampleCmsManagerTest.cs)
 ```cs
 // singleton
 DatCmsManager manager = await DatCmsManager.Builder()
@@ -42,11 +42,11 @@ string payloadSecure = payload.Secure;
 
 Console.WriteLine("payload plain : " + payloadPlain);
 Console.WriteLine("payload secure : " + payloadSecure);
-``` 
+```
 
 #### {{t('manual_code')}}
-- [{{t('example')}}: ExampleTest.cs](https://github.com/saro-lab/dat-nuget/blob/master/Saro.Dat.Tests/ExampleTest.cs)
-- [{{t('example')}}: HardTest.cs](https://github.com/saro-lab/dat-nuget/blob/master/Saro.Dat.Tests/HardTest.cs)
+- [{{t('example')}}: ExampleTest.cs](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget/blob/master/Saro.Dat.Tests/ExampleTest.cs)
+- [{{t('example')}}: HardTest.cs](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget/blob/master/Saro.Dat.Tests/HardTest.cs)
 ```cs
 var datManager = DatManager.NewInstance();
 

@@ -1,5 +1,5 @@
 # DAT Python Library
-- [Github](https://github.com/saro-lab/dat-pypi) / [Test Code](https://github.com/saro-lab/dat-pypi/tree/master/tests)
+- [Github](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi) / [Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi/tree/master/tests)
 
 ## {{t('repository')}}
 <LibUnit :lib="lib" class="no-title"/>
@@ -9,7 +9,7 @@
 
 #### {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: test_cms_manager.py](https://github.com/saro-lab/dat-pypi/blob/master/tests/test_cms_manager.py)
+- [{{t('example')}}: test_cms_manager.py](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi/blob/master/tests/test_cms_manager.py)
 ```python
 manager = (
     DatCmsManager.builder()
@@ -42,11 +42,11 @@ payload_secure = payload.secure
 
 print("payload plain : " + payload_plain)
 print("payload secure : " + payload_secure)
-``` 
+```
 
 #### {{t('manual_code')}}
-- [{{t('example')}}: test_manager.py](https://github.com/saro-lab/dat-pypi/blob/master/tests/test_manager.py)
-- [{{t('example')}}: test_hard.py](https://github.com/saro-lab/dat-pypi/blob/master/tests/test_hard.py)
+- [{{t('example')}}: test_manager.py](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi/blob/master/tests/test_manager.py)
+- [{{t('example')}}: test_hard.py](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi/blob/master/tests/test_hard.py)
 ```python
 dat_manager = DatManager()
 

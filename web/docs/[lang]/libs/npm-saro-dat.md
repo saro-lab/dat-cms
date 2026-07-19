@@ -1,5 +1,5 @@
 # DAT Javascript, Typescript Library
-- [Github](https://github.com/saro-lab/dat-npm) / [Test Code](https://github.com/saro-lab/dat-npm/tree/master/src)
+- [Github](https://github.com/saro-lab/dat/tree/master/clients/dat-npm) / [Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-npm/tree/master/src)
 
 ## {{t('repository')}}
 <LibUnit :lib="lib" class="no-title"/>
@@ -8,7 +8,7 @@
 
 #### {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: dat.cms.manager.test.ts](https://github.com/saro-lab/dat-npm/blob/master/src/dat.cms.manager.test.ts)
+- [{{t('example')}}: dat.cms.manager.test.ts](https://github.com/saro-lab/dat/tree/master/clients/dat-npm/blob/master/src/dat.cms.manager.test.ts)
 ```js
 const manager = await DatCmsManager.builder()
     .uri("http://localhost:8088")
@@ -35,11 +35,11 @@ const payloadSecure = payload.secure;
 
 console.log("payload plain : " + payloadPlain);
 console.log("payload secure : " + payloadSecure);
-``` 
+```
 
 #### {{t('manual_code')}}
-- [{{t('example')}}: dat.manager.test.ts](https://github.com/saro-lab/dat-npm/blob/master/src/dat.manager.test.ts)
-- [{{t('example')}}: hard.test.ts](https://github.com/saro-lab/dat-npm/blob/master/src/hard.test.ts)
+- [{{t('example')}}: dat.manager.test.ts](https://github.com/saro-lab/dat/tree/master/clients/dat-npm/blob/master/src/dat.manager.test.ts)
+- [{{t('example')}}: hard.test.ts](https://github.com/saro-lab/dat/tree/master/clients/dat-npm/blob/master/src/hard.test.ts)
 ```js
 const manager = new DatManager();
 

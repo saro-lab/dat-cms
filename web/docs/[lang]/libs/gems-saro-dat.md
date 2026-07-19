@@ -1,5 +1,5 @@
 # DAT Ruby Library
-- [Github](https://github.com/saro-lab/dat-ruby) / [Test Code](https://github.com/saro-lab/dat-ruby/tree/master/test)
+- [Github](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby) / [Test Code](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby/tree/master/test)
 
 ## {{t('repository')}}
 <LibUnit :lib="lib" class="no-title"/>
@@ -9,7 +9,7 @@
 
 #### {{t('dat_cms')}}
 - [{{t('download')}}: Kubernetes, Docker, Binary](../svc/docker-saro-lab-dat-cms)
-- [{{t('example')}}: test_cms_manager.rb](https://github.com/saro-lab/dat-ruby/blob/master/test/test_cms_manager.rb)
+- [{{t('example')}}: test_cms_manager.rb](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby/blob/master/test/test_cms_manager.rb)
 ```rb
 manager = Saro::Dat::DatCmsManager.builder
   .uri("http://localhost:8088")
@@ -43,11 +43,11 @@ puts "payload secure : " + payload_secure
 
 assert_equal plain, payload_plain
 assert_equal secure, payload_secure
-``` 
+```
 
 #### {{t('manual_code')}}
-- [{{t('example')}}: test_hard.rb](https://github.com/saro-lab/dat-ruby/blob/master/test/test_hard.rb)
-- [{{t('example')}}: test_manager_example.rb](https://github.com/saro-lab/dat-ruby/blob/master/test/test_manager_example.rb)
+- [{{t('example')}}: test_hard.rb](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby/blob/master/test/test_hard.rb)
+- [{{t('example')}}: test_manager_example.rb](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby/blob/master/test/test_manager_example.rb)
 ```rb
 manager = Saro::Dat::DatManager.new
 

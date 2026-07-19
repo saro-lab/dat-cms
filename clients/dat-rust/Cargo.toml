@@ -1,10 +1,10 @@
 [package]
 name = "dat"
-version = "4.3.3"
+version = "4.3.6"
 edition = "2024"
 authors = ["marker <j@saro.me>"]
 description = "DAT - Distributed Access Token"
-repository = "https://github.com/saro-lab/dat-rust"
+repository = "https://github.com/saro-lab/dat/tree/master/clients/dat-rust"
 keywords = ["dat", "distributed", "access", "token", "session"]
 homepage = "https://dat.saro.me/"
 documentation = "https://dat.saro.me/libs/cargo-dat"

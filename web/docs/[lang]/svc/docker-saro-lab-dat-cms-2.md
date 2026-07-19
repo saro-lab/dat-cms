@@ -60,7 +60,7 @@ podman run -d --name dat-cms -p 8088:80 \
 ```
 
 ## {{t('cms_binary')}}
-> https://github.com/saro-lab/dat-cms/releases
+> https://github.com/saro-lab/dat/releases
 #### Linux, Mac
 ```shell
 cp ./download-filename ./dat-cms
@@ -193,7 +193,7 @@ spec:
 
 ```
 kubectl apply -f dat.yml
-curl http://dat.yournamespace.svc.cluster.local/version 
+curl http://dat.yournamespace.svc.cluster.local/version
 ```
 
 
@@ -232,9 +232,9 @@ curl http://dat.yournamespace.svc.cluster.local/version
     - {{t('default')}}: `<Empty>` ({{t('cms_no_log_file')}})
 - `SINGLE_SERVER`
   > signature_algorithm, crypto_algorithm, cron, certificate_propagation_delay_seconds, dat_issuance_duration_seconds, dat_ttl_seconds<br/>
-  {{t('cms_ex')}} HMAC-SHA512-MFS, IV-AES256-GCM<br/> 
+  {{t('cms_ex')}} HMAC-SHA512-MFS, IV-AES256-GCM<br/>
   {{t('cms_ex')}} HMAC-SHA512-MFS, IV-AES256-GCM, 0 0/30 * * * *, 1200, 10800, 600<br/>
-  
+
   [{{t('cms_k8s_multi_pods_example')}}](doc/k8s-example.yml)
     - `CRON`
         - {{t('cms_schedule')}}: `0 0/10 * * * *`
@@ -244,7 +244,7 @@ curl http://dat.yournamespace.svc.cluster.local/version
         - `DEBUG BUILD` "HMAC-SHA512-MFS,IV-AES256-GCM,0 0/30 * * * *,1200,10800,600"
 
 ## {{t('see')}}
-- Github: https://github.com/saro-lab/dat-cms
+- Github: https://github.com/saro-lab/dat
 
 
 
