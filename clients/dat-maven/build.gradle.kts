@@ -13,7 +13,7 @@ plugins {
 
 val datGroupId = "me.saro"
 val datArtifactId = "dat"
-val datVersion = "4.3.5"
+val datVersion = "4.3.6"
 
 group = datGroupId
 version = datVersion
@@ -121,9 +121,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/saro-lab/dat-maven.git")
-                    developerConnection.set("scm:git:git@github.com:saro-lab/dat-maven.git")
-                    url.set("https://github.com/saro-lab/dat-maven")
+                    connection.set("scm:git:git://github.com/saro-lab/dat.git")
+                    developerConnection.set("scm:git:git@github.com:saro-lab/dat.git")
+                    url.set("https://github.com/saro-lab/dat/tree/master/clients/dat-maven")
                 }
             }
         }

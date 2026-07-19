@@ -3,8 +3,8 @@
 export const libList: Library[] = [
     // libraries
     _cargo('dat', '4.3.6', '/libs/cargo-dat'),
-    _maven('me.saro:dat', '4.3.5', '/libs/maven-me.saro-dat'),
-    _npm('saro-dat', '4.3.3', '/libs/npm-saro-dat', true),
+    _maven('me.saro:dat', '4.3.6', '/libs/maven-me.saro-dat'),
+    _npm('saro-dat', '4.3.4', '/libs/npm-saro-dat', true),
     _pypi('saro-dat', '4.4.1', '/libs/pypi-saro-dat'),
     _nuget('saro-dat', '4.3.2', '/libs/nuget-saro-dat'),
     _go('github.com/saro-lab/dat/clients/dat-go/v4', 'v4.3.3', '/libs/go-saro-dat'),
