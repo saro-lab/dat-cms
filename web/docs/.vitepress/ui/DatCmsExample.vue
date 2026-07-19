@@ -2,11 +2,11 @@
   <div>
     <h1>{{t('dat_cms')}}</h1>
     <div class="text-sm font-bold">
-      <a href="https://github.com/saro-lab/dat-cms" target="_blank">
+      <a href="https://github.com/saro-lab/dat" target="_blank">
         Github
       </a>
       /
-      <a href="https://github.com/saro-lab/dat-cms/releases" target="_blank">
+      <a href="https://github.com/saro-lab/dat/releases" target="_blank">
         {{t('download')}}
       </a>
     </div>

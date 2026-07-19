@@ -9,7 +9,7 @@ podman build --memory=16g --memory-swap=-1 \
     --manifest docker.io/sarolab/dat-cms:latest .
 
 podman manifest push --all docker.io/sarolab/dat-cms:latest
-podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:4.3.5
+podman manifest push --all docker.io/sarolab/dat-cms:latest docker.io/sarolab/dat-cms:4.3.6
 ```
 
 ## cargo update
@@ -22,3 +22,6 @@ cargo upgrade
 podman build -t dat-cms:test .
 podman run -d --name dat-cms-test -p 8089:80 dat-cms:test
 ```
+
+## version
+- [libs.ts](web/docs/.vitepress/src/libs.ts)

@@ -2,7 +2,7 @@
 
 export const libList: Library[] = [
     // libraries
-    _cargo('dat', '4.3.3', '/libs/cargo-dat'),
+    _cargo('dat', '4.3.6', '/libs/cargo-dat'),
     _maven('me.saro:dat', '4.3.5', '/libs/maven-me.saro-dat'),
     _npm('saro-dat', '4.3.3', '/libs/npm-saro-dat', true),
     _pypi('saro-dat', '4.4.1', '/libs/pypi-saro-dat'),
@@ -12,7 +12,7 @@ export const libList: Library[] = [
     _ruby('saro-dat', '4.3.3', '/libs/gems-saro-dat'),
 
     // services
-    _docker('sarolab/dat-cms', '4.3.5', '/svc/docker-saro-lab-dat-cms', [
+    _docker('sarolab/dat-cms', '4.3.6', '/svc/docker-saro-lab-dat-cms', [
         'arch=amd64',
         'arch=arm64',
         'type=link'

@@ -12,9 +12,9 @@
 - [C#](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget)
 - [Python](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi)
 - [Go](https://github.com/saro-lab/dat/tree/master/clients/dat-go)
-- [Ruby](https://github.com/saro-lab/dat-ruby)
-- [C/C++ (Vcpkg)](https://github.com/saro-lab/dat-vcpkg)
-- [Cert(Key) Server (Docker)](https://github.com/saro-lab/dat-cms)
+- [Ruby](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby)
+- [C/C++ (Vcpkg)](https://github.com/saro-lab/dat/tree/master/clients/dat-vcpkg)
+- [Cert(Key) Server (Docker)](https://github.com/saro-lab/dat)
 
 
 ## Support algorithm
@@ -40,7 +40,7 @@
 - random plain and secure test
 - mac mini m4 2024 basic (10 core)
 - release compile
-- [bench_test.rs](tests/bench_test.rs)
+- [bench_test.rs](https://github.com/saro-lab/dat/tree/master/clients/dat-rust/tests/bench_test.rs)
 ```
 performance test (plain, secure)
 plain: 0zKhyTW1luzH3peLczCPDdiRstBLokR3xc9DFEkcoswVHnWQ0XOPKtqgrzWxw8fB5sZEGo59uFG8ovBgew4U8MxeqD67i5bkTZlo
