@@ -6,15 +6,15 @@
 - [C# Example](https://dat.saro.me/--/libs/nuget-saro-dat)
 
 ### Support Platform
-- [Rust](https://github.com/saro-lab/dat-rust)
-- [Java, Kotlin](https://github.com/saro-lab/dat-maven)
-- [Javascript, Typescript](https://github.com/saro-lab/dat-npm)
-- [C#](https://github.com/saro-lab/dat-nuget)
-- [Python](https://github.com/saro-lab/dat-pypi)
-- [Go](https://github.com/saro-lab/dat-go)
-- [Ruby](https://github.com/saro-lab/dat-ruby)
-- [C/C++ (Vcpkg)](https://github.com/saro-lab/dat-vcpkg)
-- [Cert(Key) Server (Docker)](https://github.com/saro-lab/dat-cms)
+- [Rust](https://github.com/saro-lab/dat/tree/master/clients/dat-rust)
+- [Java, Kotlin](https://github.com/saro-lab/dat/tree/master/clients/dat-maven)
+- [Javascript, Typescript](https://github.com/saro-lab/dat/tree/master/clients/dat-npm)
+- [C#](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget)
+- [Python](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi)
+- [Go](https://github.com/saro-lab/dat/tree/master/clients/dat-go)
+- [Ruby](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby)
+- [C/C++ (Vcpkg)](https://github.com/saro-lab/dat/tree/master/clients/dat-vcpkg)
+- [Cert(Key) Server (Docker)](https://github.com/saro-lab/dat)
 
 ## Support algorithm
 ### Signature
@@ -38,7 +38,7 @@
 # Performance
 - random plain and secure test
 - mac mini m4 2024 basic (10 core)
-- [BenchTest.cs](Saro.Dat.Tests/BenchTest.cs)
+- [BenchTest.cs](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget/Saro.Dat.Tests/BenchTest.cs)
 ```
 Plain : AyQpljQgoxX5TCZj4MqVXDCbI0jJe6I2Fk8UW0QnRVfG2r6DTYgCdR9brxiOKvp1IyIggmxrdBWSDzWab1NeV1kI1gpMNS4KfKwx
 Secure : ljaUNr2LTgM0wG8gJnEOJ130NC128f7rAgmWq5u2PcY817jOVU24CbfMuaahH4JYjlkbFJEtXZa6eOQHOPjh4qB73jxrEd8mN7GJ

@@ -6,7 +6,7 @@ export const libList: Library[] = [
     _maven('me.saro:dat', '4.3.6', '/libs/maven-me.saro-dat'),
     _npm('saro-dat', '4.3.4', '/libs/npm-saro-dat', true),
     _pypi('saro-dat', '4.4.1', '/libs/pypi-saro-dat'),
-    _nuget('saro-dat', '4.3.2', '/libs/nuget-saro-dat'),
+    _nuget('saro-dat', '4.3.3', '/libs/nuget-saro-dat'),
     _go('github.com/saro-lab/dat/clients/dat-go/v4', 'v4.3.3', '/libs/go-saro-dat'),
     _vcpkg('dat', '4.3.0', '/libs/vcpkg-dat', true),
     _ruby('saro-dat', '4.3.3', '/libs/gems-saro-dat'),
