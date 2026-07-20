@@ -16,9 +16,7 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3c88e585-beb5-4891-92df-1b934d6b52b7" name="Changes" comment="Integrate Project&#10;&#10;- layout">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="3c88e585-beb5-4891-92df-1b934d6b52b7" name="Changes" comment="Integrate Project&#10;&#10;- layout" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -225,7 +223,7 @@
       <workItem from="1784482646029" duration="10034000" />
       <workItem from="1784523397717" duration="39000" />
       <workItem from="1784524567119" duration="291000" />
-      <workItem from="1784524872177" duration="14453000" />
+      <workItem from="1784524872177" duration="15047000" />
     </task>
     <task id="LOCAL-00001" summary="Integrate Project">
       <option name="closed" value="true" />
