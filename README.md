@@ -10,14 +10,14 @@
 - [Download](https://github.com/saro-lab/dat/releases)
 
 ### Support Platform
-- [Rust](https://github.com/saro-lab/dat/tree/master/clients/dat-rust)
-- [Java, Kotlin](https://github.com/saro-lab/dat/tree/master/clients/dat-maven)
-- [Javascript, Typescript](https://github.com/saro-lab/dat/tree/master/clients/dat-npm)
-- [C#](https://github.com/saro-lab/dat/tree/master/clients/dat-nuget)
-- [Python](https://github.com/saro-lab/dat/tree/master/clients/dat-pypi)
-- [Go](https://github.com/saro-lab/dat/tree/master/clients/dat-go)
-- [Ruby](https://github.com/saro-lab/dat/tree/master/clients/dat-ruby)
-- [C/C++ (Vcpkg)](https://github.com/saro-lab/dat/tree/master/clients/dat-vcpkg)
+- [Rust](https://github.com/saro-lab/dat/tree/master/dat-rust)
+- [Java, Kotlin](https://github.com/saro-lab/dat/tree/master/dat-maven)
+- [Javascript, Typescript](https://github.com/saro-lab/dat/tree/master/dat-npm)
+- [C#](https://github.com/saro-lab/dat/tree/master/dat-nuget)
+- [Python](https://github.com/saro-lab/dat/tree/master/dat-pypi)
+- [Go](https://github.com/saro-lab/dat/tree/master/dat-go)
+- [Ruby](https://github.com/saro-lab/dat/tree/master/dat-ruby)
+- [C/C++ (Vcpkg)](https://github.com/saro-lab/dat/tree/master/dat-vcpkg)
 - [Cert(Key) Server (Docker)](https://github.com/saro-lab/dat)
 
 ### Build
