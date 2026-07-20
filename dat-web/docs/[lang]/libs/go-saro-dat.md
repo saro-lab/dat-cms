@@ -113,7 +113,7 @@ println(payload.SecureText())
 <script setup lang="ts">
 import LibUnit from '../../.vitepress/ui/LibUnit.vue';
 import { findLibrary } from '../../.vitepress/src/libs';
-const lib = findLibrary('Go', 'github.com/saro-lab/dat-go/v4');
+const lib = findLibrary('Go', 'github.com/saro-lab/dat/dat-go/v4');
 import {useTranslate} from "../../.vitepress/src/langs";
 const {t} = useTranslate();
 </script>
